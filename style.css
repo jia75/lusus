@@ -1,0 +1,37 @@
+html {
+    background-color: #f5f5dc;
+    color: #282814;
+}
+#textChessboard {
+    font-family: monospace;
+}
+.errorMessage {
+    color: #c00
+}
+#gridContainer {
+    display: grid;
+    grid-template-columns: 62vw 28vw;
+}
+#gridContainer > div {
+    padding: 1vw;
+}
+#chessboardContainer {
+    width: 100%;
+    height: 85vh;
+    position: relative;
+}
+#chessboardImage {
+    image-rendering: pixelated;
+    width: 85vh;
+    height:85vh;
+    object-fit: contain;
+}
+#rightContainer {
+    background-color: #d5d5bc;
+}
+.chessPieceImage {
+    position: absolute;
+    image-rendering: crisp-edges;
+    width: 10.625vh;
+    height: 10.625vh;
+}

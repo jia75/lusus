@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <h1>Chess Analysis</h1>
+        <div id="gridContainer">
+
+            <div>
+                <div id="chessboardContainer">
+                    <img src="chessboard.png" id="chessboardImage">
+                    <div id="chessPieceImageContainer"></div>
+                    <script>
+                        chessboard.display();
+                    </script>
+                </div>
+            </div>
+            
+            <div id="rightContainer">
+                <input type="text" id="moveTextbox" placeholder="Your Move" onkeydown = "if (event.keyCode == 13)
+                document.getElementById('moveFormEnterButton').click()">
+                <button onclick="parseMove(chessboard)" id="moveFormEnterButton">Make Move</button>
+                <br>
+                <span class="errorMessage" id="playerMoveFormError"></span>
+
+                <span id="moveList"></span>
+
+                <br>
+
+                <button onclick="chessboard.display()">update chessboard</button>
+            </div>
+            
+        </div>
+    </body>
+</html>
