@@ -10,10 +10,23 @@
 
             <div>
                 <div id="chessboardContainer">
-                    <img src="Chessboard.png" id="chessboardImage">
+                    <img src="chessboard.png" id="chessboardImage">
+                    <div id="clickLocationDetectorContainer">
+                        <script>
+                            for (let rank = 0; rank < 8; rank++) {
+                                for (file = 0; file <8; file++) {
+                                    document.getElementById("clickLocationDetectorContainer")
+                                    .insertAdjacentHTML("beforeend",'<div class="clickLocationDetector" id="square'+
+                                    (rank*8+file)+'" style="left: '+(file*10.625)+'vh; top: '+
+                                    (rank*10.625)+'vh;" onclick="squareClicked(chessboard,'+(rank*8+file)+');"></div>');
+                                }
+                            }
+                        </script>
+                    </div>
                     <div id="chessPieceImageContainer"></div>
                     <script>
                         chessboard.display();
+                        var mainGeneratedMoves = chessboard.generateMoves();
                     </script>
                 </div>
             </div>
@@ -24,12 +37,7 @@
                 <button onclick="parseMove(chessboard)" id="moveFormEnterButton">Make Move</button>
                 <br>
                 <span class="errorMessage" id="playerMoveFormError"></span>
-
                 <span id="moveList"></span>
-
-                <br>
-
-                <button onclick="chessboard.display()">update chessboard</button>
             </div>
             
         </div>

@@ -1,12 +1,17 @@
 html {
-    background-color: #f5f5dc;
+    background-color: #d2ac94;
     color: #282814;
+    font-family:'Courier New', Courier, monospace;
+}
+h1 {
+    font-size: 4vh;
 }
 #textChessboard {
     font-family: monospace;
 }
 .errorMessage {
-    color: #c00
+    color: #fff;
+    background-color: #f00;
 }
 #gridContainer {
     display: grid;
@@ -27,11 +32,30 @@ html {
     object-fit: contain;
 }
 #rightContainer {
-    background-color: #d5d5bc;
+    background-color: #b57e4f;
 }
 .chessPieceImage {
     position: absolute;
     image-rendering: crisp-edges;
     width: 10.625vh;
     height: 10.625vh;
+}
+.clickLocationDetector {
+    position:absolute;
+    width: 10.625vh;
+    height: 10.625vh;
+    background-color: #ff000000;
+    z-index: 1;
+}
+button {
+    background-color: #eeeeee;
+    border: 0;
+    border-radius: 3px;
+    font-family:'Courier New', Courier, monospace;
+}
+button:focus {
+    background-color: #efdada;
+}
+#moveList {
+    color: #ffffff;
 }
