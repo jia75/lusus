@@ -75,7 +75,12 @@ class Chessboard {
     this.board[lastMove[0].to].rank = indexToFileRank(lastMove[0].from).rank;
     this.board[lastMove[0].to].file = indexToFileRank(lastMove[0].from).file;
     this.board.splice(lastMove[0].from,1,this.board[lastMove[0].to]);
+    if (lastMove[2]) {
+      this.board.splice(lastMove[0].to + (8*((this.toPlay*2)-1)),1,lastMove[1]);
+      this.board.splice(lastMove[0].to,1,undefined);
+    } else {
     this.board.splice(lastMove[0].to,1,lastMove[1]);
+    }
     this.toPlay = (this.toPlay+1)%2;
   }
   getDisplayString() {
