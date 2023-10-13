@@ -26,18 +26,14 @@
                     <div id="chessPieceImageContainer"></div>
                     <script>
                         chessboard.display();
-                        var mainGeneratedMoves = chessboard.generateMoves();
+                        var mainGeneratedMoves = chessboard.generateMoves(true);
                     </script>
                 </div>
             </div>
             
             <div id="rightContainer">
-                <input type="text" id="moveTextbox" placeholder="Your Move" onkeydown = "if (event.keyCode == 13)
-                document.getElementById('moveFormEnterButton').click()">
-                <button onclick="parseMove(chessboard)" id="moveFormEnterButton">Make Move</button>
-                <br>
                 <span class="errorMessage" id="playerMoveFormError"></span>
-                <span id="moveList"></span>
+                <span id="moveList">Move List: <br></span>
             </div>
             
         </div>
