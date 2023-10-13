@@ -50,12 +50,12 @@ class Chessboard {
     //movehistory: [move made, overriden square contents, was en passant, was castling, castling availabilities changed]
     if (moveToMake.to == this.enPassantSquare && this.board[moveToMake.from].type == 5)
     {
-      this.moveHistory.push([moveToMake, this.board[moveToMake.to - (8*((this.toPlay*2)-1))], true]);
+      this.moveHistory.push([moveToMake, this.board[moveToMake.to - (8*((this.toPlay*2)-1))], true, false]);
       this.board[moveToMake.from].rank = indexToFileRank(moveToMake.to).rank;
       this.board[moveToMake.from].file = indexToFileRank(moveToMake.to).file;
       this.board.splice(moveToMake.to,1,this.board[moveToMake.from]);
-      this.board.splice(moveToMake.from,1,undefined); 
-      this.board.splice(moveToMake.to - (8*((this.toPlay*2)-1)),1,undefined); 
+      this.board.splice(moveToMake.from,1,undefined);
+      this.board.splice(moveToMake.to - (8*((this.toPlay*2)-1)),1,undefined);
     } else if (moveToMake.castlingDirection == 0) {
       this.moveHistory.push([moveToMake, this.board[moveToMake.to], false, true]);
       this.board[moveToMake.from].rank = indexToFileRank(moveToMake.to).rank;
@@ -63,9 +63,9 @@ class Chessboard {
       this.board[moveToMake.from + 3].rank = indexToFileRank(moveToMake.to - 1).rank;
       this.board[moveToMake.from + 3].file = indexToFileRank(moveToMake.to - 1).file;
       this.board.splice(moveToMake.to,1,this.board[moveToMake.from]);
-      this.board.splice(moveToMake.from,1,undefined); 
+      this.board.splice(moveToMake.from,1,undefined);
       this.board.splice(moveToMake.to - 1,1,this.board[moveToMake.from + 3]);
-      this.board.splice(moveToMake.from + 3,1,undefined); 
+      this.board.splice(moveToMake.from + 3,1,undefined);
     } else if (moveToMake.castlingDirection == 1) {
       this.moveHistory.push([moveToMake, this.board[moveToMake.to], false, true]);
       this.board[moveToMake.from].rank = indexToFileRank(moveToMake.to).rank;
@@ -73,17 +73,18 @@ class Chessboard {
       this.board[moveToMake.from - 4].rank = indexToFileRank(moveToMake.to + 1).rank;
       this.board[moveToMake.from - 4].file = indexToFileRank(moveToMake.to + 1).file;
       this.board.splice(moveToMake.to,1,this.board[moveToMake.from]);
-      this.board.splice(moveToMake.from,1,undefined); 
+      this.board.splice(moveToMake.from,1,undefined);
       this.board.splice(moveToMake.to + 1,1,this.board[moveToMake.from - 4]);
-      this.board.splice(moveToMake.from - 4,1,undefined); 
+      this.board.splice(moveToMake.from - 4,1,undefined);
     } else {
-    this.moveHistory.push([moveToMake, this.board[moveToMake.to], false]);
+    this.moveHistory.push([moveToMake, this.board[moveToMake.to], false, false]);
     this.board[moveToMake.from].rank = indexToFileRank(moveToMake.to).rank;
     this.board[moveToMake.from].file = indexToFileRank(moveToMake.to).file;
     this.board.splice(moveToMake.to,1,this.board[moveToMake.from]);
-    this.board.splice(moveToMake.from,1,undefined); 
+    this.board.splice(moveToMake.from,1,undefined);
     }
     if (this.castlingAvailability.includes(true)) {
+      this.moveHistory[this.moveHistory.length-1].push(structuredClone(this.castlingAvailability));
       if (this.board[moveToMake.to].type == 0) {
         this.castlingAvailability[this.toPlay*2] = false;
         this.castlingAvailability[this.toPlay*2+1] = false;
@@ -134,6 +135,7 @@ class Chessboard {
     this.board.splice(lastMove[0].to,1,lastMove[1]);
     }
     this.toPlay = (this.toPlay+1)%2;
+    this.castlingAvailability = this?.moveHistory[4] ?? [false,false,false,false];
   }
   getDisplayString() {
     let pieceToFileArray = ["whiteKing","whiteQueen","whiteRook","whiteBishop","whiteKnight","whitePawn",
@@ -142,7 +144,7 @@ class Chessboard {
     for(let chessboardInterfaceIndex = 0; chessboardInterfaceIndex < 64; chessboardInterfaceIndex++) {
       if (this.board[chessboardInterfaceIndex] != undefined) {
         chessPieceImageString += "<img class ='chessPieceImage' src='pieces/"+pieceToFileArray[this.board[chessboardInterfaceIndex].pieceCode].toString()+
-        ".svg' style='top:"+(Math.floor(chessboardInterfaceIndex/8)*10.625).toString()+"vh; left: "+((chessboardInterfaceIndex%8)*10.625).toString()+"vh;'></img>"  
+        ".svg' style='top:"+(Math.floor(chessboardInterfaceIndex/8)*10.625).toString()+"vh; left: "+((chessboardInterfaceIndex%8)*10.625).toString()+"vh;'></img>"
       }
     }
     return chessPieceImageString;
@@ -242,43 +244,43 @@ class Chessboard {
       }
       //Knight
       if (this.board[originSquares[originSquareIndex]].type == 4) {
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+10)) 
-        && this.board[originSquares[originSquareIndex]].file < 6 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+10))
+        && this.board[originSquares[originSquareIndex]].file < 6
         && this.board[originSquares[originSquareIndex]].rank > 0) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]+10));
         }
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+17)) 
-        && this.board[originSquares[originSquareIndex]].file < 7 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+17))
+        && this.board[originSquares[originSquareIndex]].file < 7
         && this.board[originSquares[originSquareIndex]].rank > 1) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]+17));
         }
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+6)) 
-        && this.board[originSquares[originSquareIndex]].file > 0 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+6))
+        && this.board[originSquares[originSquareIndex]].file > 0
         && this.board[originSquares[originSquareIndex]].rank > 1) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]+6));
         }
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+15)) 
-        && this.board[originSquares[originSquareIndex]].file > 0 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]+15))
+        && this.board[originSquares[originSquareIndex]].file > 0
         && this.board[originSquares[originSquareIndex]].rank > 1) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]+15));
         }
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-10)) 
-        && this.board[originSquares[originSquareIndex]].file > 1 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-10))
+        && this.board[originSquares[originSquareIndex]].file > 1
         && this.board[originSquares[originSquareIndex]].rank < 7) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]-10));
         }
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-6)) 
-        && this.board[originSquares[originSquareIndex]].file < 6 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-6))
+        && this.board[originSquares[originSquareIndex]].file < 6
         && this.board[originSquares[originSquareIndex]].rank < 7) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]-6));
         }
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-17)) 
-        && this.board[originSquares[originSquareIndex]].file > 0 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-17))
+        && this.board[originSquares[originSquareIndex]].file > 0
         && this.board[originSquares[originSquareIndex]].rank < 6) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]-17));
         }
-        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-15)) 
-        && this.board[originSquares[originSquareIndex]].file < 7 
+        if (generalDestinationSquares.includes((originSquares[originSquareIndex]-15))
+        && this.board[originSquares[originSquareIndex]].file < 7
         && this.board[originSquares[originSquareIndex]].rank < 6) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex]-15));
         }
@@ -397,10 +399,11 @@ class Chessboard {
             break;
           }
       }
+      //King Moves
       if (this.board[originSquares[originSquareIndex]].type == 0) {
         let allowedKingDifferences = [-9,-8,-7,-1,1,7,8,9];
         for (let pieceMoveCheckerIndex = 0; pieceMoveCheckerIndex < 8; pieceMoveCheckerIndex++) {
-          if (generalDestinationSquares.includes(originSquares[originSquareIndex] + allowedKingDifferences[pieceMoveCheckerIndex]) 
+          if (generalDestinationSquares.includes(originSquares[originSquareIndex] + allowedKingDifferences[pieceMoveCheckerIndex])
           && !enemyAttackSquares.includes(originSquares[originSquareIndex] + allowedKingDifferences[pieceMoveCheckerIndex])
           && Math.abs(indexToFileRank(originSquares[originSquareIndex]).file
           -indexToFileRank(originSquares[originSquareIndex] + allowedKingDifferences[pieceMoveCheckerIndex]).file)<2) {
@@ -408,13 +411,18 @@ class Chessboard {
           }
         }
         //Kingside Castle
-        if (this.castlingAvailability[this.toPlay*2] && emptySquares.includes(originSquares[originSquareIndex] + 1) 
-        && emptySquares.includes(originSquares[originSquareIndex] + 2)) {
+        if (this.castlingAvailability[this.toPlay*2] && emptySquares.includes(originSquares[originSquareIndex] + 1)
+        && emptySquares.includes(originSquares[originSquareIndex] + 2) && !enemyAttackSquares.includes(originSquares[originSquareIndex] +1)
+        && !enemyAttackSquares.includes(originSquares[originSquareIndex] +2)) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex] + 2,undefined,undefined,0));
         }
         //Queenside Castle
-        if (this.castlingAvailability[(this.toPlay*2)+1] && emptySquares.includes(originSquares[originSquareIndex] - 1) 
-        && emptySquares.includes(originSquares[originSquareIndex] - 2 && emptySquares.includes(originSquares[originSquareIndex] - 3))) {
+        if (this.castlingAvailability[(this.toPlay*2)+1]
+        && emptySquares.includes(originSquares[originSquareIndex] - 1)
+        && emptySquares.includes(originSquares[originSquareIndex] - 2)
+        && emptySquares.includes(originSquares[originSquareIndex] - 3)
+        && !enemyAttackSquares.includes(originSquares[originSquareIndex] -1)
+        && !enemyAttackSquares.includes(originSquares[originSquareIndex] -2)) {
           moveList.push(new Move(originSquares[originSquareIndex],originSquares[originSquareIndex] - 2,undefined,undefined,1));
         }
       }
@@ -439,8 +447,8 @@ function highlightMoveList(moveList) {
 }
 
 function validateMove(generatedMoves, move) {
-  let matchingMove = generatedMoves.find(generatedMovesIndex => generatedMovesIndex.from == move.from 
-    && generatedMovesIndex.to == move.to 
+  let matchingMove = generatedMoves.find(generatedMovesIndex => generatedMovesIndex.from == move.from
+    && generatedMovesIndex.to == move.to
     && generatedMovesIndex.piecePromotion == move.piecePromotion);
   if (matchingMove != undefined) {
     move.enPassantSquare = matchingMove.enPassantSquare;
@@ -448,9 +456,9 @@ function validateMove(generatedMoves, move) {
     //king safety check
     secondaryChessboard.makeMove(move);
     let kingCode = ((secondaryChessboard.toPlay+1)%2)*6;
-    let kingSpot = secondaryChessboard.board.indexOf(secondaryChessboard.board.find(arraySearchIndexPiece => arraySearchIndexPiece != undefined 
+    let kingSpot = secondaryChessboard.board.indexOf(secondaryChessboard.board.find(arraySearchIndexPiece => arraySearchIndexPiece != undefined
       && arraySearchIndexPiece.pieceCode == kingCode));
-    if (secondaryChessboard.generateMoves().some(generatedMovesIndex => generatedMovesIndex.from != move.from 
+    if (secondaryChessboard.generateMoves().some(generatedMovesIndex => generatedMovesIndex.from != move.from
       && generatedMovesIndex.to == kingSpot)) {
         secondaryChessboard.undoLastMove();
         return false;
@@ -520,7 +528,7 @@ function squareClicked(temporaryChessboard,square) {
   if (highlightedSquare == undefined) {
   document.getElementById("square"+square).style.backgroundColor = "#ff000040";
   highlightedSquare = square;
-  } 
+  }
   else {
     if ((indexToFileRank(square).rank == 0 || indexToFileRank(square).rank == 7) && (temporaryChessboard.board[highlightedSquare] ?? {"type":0}).type == 5) {
       //!!! CHANGE (TEMPORARILY ONLY QUEEN PROMOTION) !!!
@@ -528,14 +536,14 @@ function squareClicked(temporaryChessboard,square) {
     } else {
       var piecePromotionPiece = undefined;
     }
-    var clickedMove = new Move(highlightedSquare,square, piecePromotionPiece);
+    let clickedMove = new Move(highlightedSquare,square, piecePromotionPiece);
     let startTime = Date.now();
     if (validateMove(mainGeneratedMoves, clickedMove)) {
       temporaryChessboard.makeMove(clickedMove);
       secondaryChessboard.makeMove(clickedMove);
       temporaryChessboard.display();
-      mainGeneratedMoves = chessboard.generateMoves(true);
-      
+      mainGeneratedMoves = chessboard.generateMoves(1);
+
     } else {
       document.getElementById("playerMoveFormError").innerHTML = "Invalid Move";
     }
