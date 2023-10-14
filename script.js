@@ -12,12 +12,13 @@ class Piece {
 
 class Move {
   // castling dir: 0 kingside 1 queenside
-  constructor(fromSquare, toSquare, piecePromotion=undefined, enPassantSquare=undefined, castlingDirection = undefined) {
+  constructor(fromSquare, toSquare, piecePromotion=undefined, enPassantSquare=undefined, castlingDirection = undefined, isCheck=false) {
     this.from = fromSquare;
     this.to = toSquare;
     this.piecePromotion = piecePromotion;
     this.enPassantSquare = enPassantSquare;
     this.castlingDirection = castlingDirection;
+    this.isCheck = isCheck;
   }
 }
 
