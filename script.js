@@ -547,7 +547,7 @@ function squareClicked(temporaryChessboard,square) {
     } else {
       document.getElementById("playerMoveFormError").innerHTML = "Invalid Move";
     }
-    console.log("Time to verify move: "+(Date.now()-startTime));
+    console.log("Time to verify move: "+(Date.now()-startTime)+"ms");
     document.getElementById("square"+highlightedSquare).style.backgroundColor = "#ff000000";
     highlightMoveList(mainGeneratedMoves);
     highlightedSquare = undefined;
