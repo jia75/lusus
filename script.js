@@ -30,3 +30,17 @@ function getBoardDisplayString(board) {
 function displayBoard(board) {
     document.getElementById('chessPieceImageContainer').innerHTML=getBoardDisplayString(board);
 }
+function initializeArray() {
+    let array = [];
+    for (let arrayInitializationIndex = 0; arrayInitializationIndex < 120; arrayInitializationIndex++) {
+        if (standardBoardToBuffered.includes(arrayInitializationIndex)) {
+            array.push(0);
+            continue;
+        }
+        array.push(13);
+    }
+    return array;
+}
+
+
+mainBoard = initializeArray();
