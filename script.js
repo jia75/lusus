@@ -20,12 +20,23 @@ const castlingAvailabilityStringToCode = ["-","K","Q","KQ","k","Kk","Qk","KQk","
 const pieceSymbolToCode = ["K","Q","R","B","N","P","k","q","r","b","n","p"];
 const colorToCode = ["w","b"];
 const possibleEmptySquareNumbers = ["/","1","2","3","4","5","6","7","8"];
+const fileNames = ["a","b","c","d","e","f","g","h"];
+
 function boardIndexToFile(index) {
     return index%10 - 1;
 }
 function boardIndexToRank(index) {
     return Math.floor(index/10) - 2;
 }
+
+function bufferedIndexToCoordinates(index) {
+    return fileNames[boardIndexToFile(index)] + (boardIndexToRank(index)+1);
+}
+function coordinatesToStandardIndex(index) {
+    indexCharacters = index.split("");
+    return fileNames.indexOf(indexCharacters[0]) + ((+indexCharacters[1])-1)*8;
+}
+
 function getBoardDisplayString(board) {
     let chessPieceImageString = "";
     for (let outputBoardIndex = 21; outputBoardIndex < 99; outputBoardIndex++) {
@@ -42,6 +53,7 @@ function getBoardDisplayString(board) {
 function displayBoard(board) {
     document.getElementById('chessPieceImageContainer').innerHTML=getBoardDisplayString(board);
 }
+
 function initializeBoard() {
     let boardArray = [];
     for (let boardArrayInitializationIndex = 0; boardArrayInitializationIndex < 120; boardArrayInitializationIndex++) {
@@ -57,6 +69,7 @@ function initializeBoard() {
     boardArray.push(0);
     return boardArray;
 }
+
 function interpretFEN(FENString) {
     let FENStringParts = FENString.split(" ");
     let boardModificationIndex = 0;

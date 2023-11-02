@@ -7,7 +7,7 @@
 0-119: square data  
 120: color to play (0: white, 1: black)  
 121: castling status (0-15, in binary ABCD: A is white kingside, B is white queenside, etc.)  
-122: index of en passant target square (0 if none)
+122: buffered index of en passant target square (0 if none)
 123: number of half-moves since last capture or pawn advance (if this reaches 100, draw by 50-move rule)
 
 ## Piece format
