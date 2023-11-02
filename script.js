@@ -138,7 +138,7 @@ function generateMoves(board) {
         }
     }
 
-    //Bisphop
+    //Bishop
     for (let bishopMoveGenerationIndexInFriendlySquares = 0; bishopMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; bishopMoveGenerationIndexInFriendlySquares++) {
         if (board[squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares]] != 4 + colorToPlay*6 
             && board[squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares]] != 2 + colorToPlay*6 ) {
@@ -150,6 +150,16 @@ function generateMoves(board) {
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-9));
         delete squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares];
         bishopMoveGenerationIndexInFriendlySquares--;
+    }
+
+    //Knight
+    for (let knightMoveGenerationIndexInFriendlySquares = 0; knightMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; knightMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares]] != 5 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(findKnightMoves(squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares], friendlySquares));
+        delete squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares];
+        knightMoveGenerationIndexInFriendlySquares--;
     }
 
     return moveList;
@@ -167,5 +177,16 @@ function exploreSlidingDirection(startSquare, board, friendlySquares, enemySquar
     }
     return slideMoves;
 }
-
+function findKnightMoves(startSquare, friendlySquares) {
+    let knightDestinations = [21,19,12,-12,-19,-21,-8,8];
+    let knightMoves = [];
+    for (let knightDestinationIndex = 0; knightDestinationIndex < 8; knightDestinationIndex++) {
+        if (!standardBoardToBuffered.includes(startSquare + knightDestinations[knightDestinationIndex])
+        || friendlySquares.includes(startSquare + knightDestinations[knightDestinationIndex])) {
+            continue;
+        }
+        knightMoves.push(startSquare*100+startSquare + knightDestinations[knightDestinationIndex]);
+    }
+    return knightMoves;
+}
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
