@@ -14,8 +14,8 @@ const invertedBoardToStandard = [56,57,58,59,60,61,62,63,
                                  16,17,18,19,20,21,22,23,
                                   8, 9,10,11,12,13,14,15,
                                   0, 1, 2, 3, 4, 5, 6, 7];
-const pieceNames = ["Empty","WhiteKing","WhiteQueen","WhiteRook","WhiteBishop","WhiteKnight","WhitePawn",
-"BlackKing","BlackQueen","BlackRook","BlackBishop","BlackKnight","BlackPawn","Border"];
+const pieceNames = ["Empty","whiteKing","whiteQueen","whiteRook","whiteBishop","whiteKnight","whitePawn",
+"blackKing","blackQueen","blackRook","blackBishop","blackKnight","blackPawn","Border"];
 const castlingAvailabilityStringToCode = ["-","K","Q","KQ","k","Kk","Qk","KQk","q","Kq","Qq","KQq","kq","Kkq","Qkq","KQkq"]
 const pieceSymbolToCode = ["K","Q","R","B","N","P","k","q","r","b","n","p"];
 const colorToCode = ["w","b"];
