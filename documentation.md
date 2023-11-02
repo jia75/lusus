@@ -9,6 +9,7 @@
 121: castling status (0-15, in binary ABCD: A is white kingside, B is white queenside, etc.)  
 122: buffered index of en passant target square (0 if none)
 123: number of half-moves since last capture or pawn advance (if this reaches 100, draw by 50-move rule)
+124: total full moves played (starts at 0) (increment after black plays)
 
 ## Piece format
 0: no piece  

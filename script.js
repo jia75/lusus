@@ -63,10 +63,7 @@ function initializeBoard() {
         }
         boardArray.push(13);
     }
-    boardArray.push(0);
-    boardArray.push(0);
-    boardArray.push(0);
-    boardArray.push(0);
+    boardArray.push(0,0,0,0,0);
     return boardArray;
 }
 
@@ -90,6 +87,9 @@ function interpretFEN(FENString) {
     }
     boardToReturn[120] = colorToCode.indexOf(FENStringParts[1]);
     boardToReturn[121] = castlingAvailabilityStringToCode.indexOf(FENStringParts[2]);
+    boardToReturn[122] = standardBoardToBuffered[coordinatesToStandardIndex(FENStringParts[3])] ?? 0;
+    boardToReturn[123] = +FENStringParts[4];
+    boardToReturn[124] = (+FENStringParts[5]) - 1;
     return boardToReturn;
 }
 
