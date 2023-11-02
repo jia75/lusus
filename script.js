@@ -162,6 +162,16 @@ function generateMoves(board) {
         knightMoveGenerationIndexInFriendlySquares--;
     }
 
+    //Pawn
+    for (let pawnMoveGenerationIndexInFriendlySquares = 0; pawnMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; pawnMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares]] != 6 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(findPawnMoves(squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares], board, enemySquares, emptySquares));
+        delete squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares];
+        pawnMoveGenerationIndexInFriendlySquares--;
+    }
+
     return moveList;
 }
 
@@ -188,5 +198,29 @@ function findKnightMoves(startSquare, friendlySquares) {
         knightMoves.push(startSquare*100+startSquare + knightDestinations[knightDestinationIndex]);
     }
     return knightMoves;
+}
+function findPawnMoves(startSquare, board, enemySquares, emptySquares) {
+    let pawnMoves = [];
+    //0 -> 1
+    //1 -> -1
+    let colorMultiplier = board[120] * -2 + 1;
+    let enPassantTarget = board[122];
+    enemySquares.push(enPassantTarget);
+    if (enemySquares.includes(startSquare + 9*colorMultiplier)) {
+        pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
+    }
+    if (enemySquares.includes(startSquare + 11*colorMultiplier)) {
+        pawnMoves.push(startSquare*100+startSquare + 11*colorMultiplier);
+    }
+    enemySquares.pop();
+    if (emptySquares.includes(startSquare + 10*colorMultiplier)) {
+        pawnMoves.push(startSquare*100+startSquare + 10*colorMultiplier);
+    } else {
+        return pawnMoves;
+    }
+    if (emptySquares.includes(startSquare + 20*colorMultiplier) && boardIndexToRank(startSquare) == board[120]*5+1) {
+        pawnMoves.push(startSquare*100+startSquare + 20*colorMultiplier);
+    }
+    return pawnMoves;
 }
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
