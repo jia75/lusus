@@ -128,30 +128,44 @@ function generateMoves(board) {
             && board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] != 2 + colorToPlay*6 ) {
             continue;
         }
-        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,10));
-        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-10));
-        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,1));
-        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-1));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,10));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-10));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,1));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-1));
         if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] == 3 + colorToPlay*6) {
             delete squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares];
             rookMoveGenerationIndexInFriendlySquares--;
         }
     }
 
+    //Bisphop
+    for (let bishopMoveGenerationIndexInFriendlySquares = 0; bishopMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; bishopMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares]] != 4 + colorToPlay*6 
+            && board[squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares]] != 2 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,11));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-11));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,9));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-9));
+        delete squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares];
+        bishopMoveGenerationIndexInFriendlySquares--;
+    }
+
     return moveList;
 }
 
-function exploreRookDirection(startSquare, board, friendlySquares, enemySquares, squareDifference) {
-    let RookMoves = [];
-    for (let rookExplorationIndex = startSquare + squareDifference; 
-        board[rookExplorationIndex] != 13 && !friendlySquares.includes(rookExplorationIndex); rookExplorationIndex += squareDifference) {
-            if (enemySquares.includes(rookExplorationIndex)) {
-                RookMoves.push(startSquare*100 + rookExplorationIndex);
+function exploreSlidingDirection(startSquare, board, friendlySquares, enemySquares, squareDifference) {
+    let slideMoves = [];
+    for (let slideExplorationIndex = startSquare + squareDifference; 
+        board[slideExplorationIndex] != 13 && !friendlySquares.includes(slideExplorationIndex); slideExplorationIndex += squareDifference) {
+            if (enemySquares.includes(slideExplorationIndex)) {
+                slideMoves.push(startSquare*100 + slideExplorationIndex);
                 break;
             }
-            RookMoves.push(startSquare*100 + rookExplorationIndex);
+            slideMoves.push(startSquare*100 + slideExplorationIndex);
     }
-    return RookMoves;
+    return slideMoves;
 }
 
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
