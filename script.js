@@ -16,6 +16,7 @@ const invertedBoardToStandard = [56,57,58,59,60,61,62,63,
                                   0, 1, 2, 3, 4, 5, 6, 7];
 const pieceNames = ["Empty","WhiteKing","WhiteQueen","WhiteRook","WhiteBishop","WhiteKnight","WhitePawn",
 "BlackKing","BlackQueen","BlackRook","BlackBishop","BlackKnight","BlackPawn","Border"];
+const castlingAvailabilityStringToCode = ["-","K","Q","KQ","k","Kk","Qk","KQk","q","Kq","Qq","KQq","kq","Kkq","Qkq","KQkq"]
 const pieceSymbolToCode = ["K","Q","R","B","N","P","k","q","r","b","n","p"];
 const colorToCode = ["w","b"];
 const possibleEmptySquareNumbers = ["/","1","2","3","4","5","6","7","8"];
@@ -75,6 +76,7 @@ function interpretFEN(FENString) {
         return initializeBoard();
     }
     boardToReturn[120] = colorToCode.indexOf(FENStringParts[1]);
+    boardToReturn[121] = castlingAvailabilityStringToCode.indexOf(FENStringParts[2]);
     return boardToReturn;
 }
 
