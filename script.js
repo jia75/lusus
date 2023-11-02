@@ -21,6 +21,11 @@ const pieceSymbolToCode = ["K","Q","R","B","N","P","k","q","r","b","n","p"];
 const colorToCode = ["w","b"];
 const possibleEmptySquareNumbers = ["/","1","2","3","4","5","6","7","8"];
 const fileNames = ["a","b","c","d","e","f","g","h"];
+ 
+function pieceToColor(pieceCode) {
+    if (0 < pieceCode && pieceCode < 7) {return 0;}
+    if (6 < pieceCode && pieceCode < 13) {return 1;}
+}
 
 function boardIndexToFile(index) {
     return index%10 - 1;
@@ -91,6 +96,62 @@ function interpretFEN(FENString) {
     boardToReturn[123] = +FENStringParts[4];
     boardToReturn[124] = (+FENStringParts[5]) - 1;
     return boardToReturn;
+}
+
+function generateMoves(board) {
+    let moveList = [];
+    let colorToPlay = board[120];
+    let emptySquares = Array();
+    let occupiedSquares = Array();
+    let friendlySquares = Array();
+    let enemySquares = Array();
+    for (let squareCategorizationIndex = 21; squareCategorizationIndex < 99; squareCategorizationIndex++) {
+        if (!standardBoardToBuffered.includes(squareCategorizationIndex)) {
+            continue;
+        }
+        if (board[squareCategorizationIndex] == 0) {
+            emptySquares.push(squareCategorizationIndex);
+            continue;
+        }
+        if (pieceToColor(board[squareCategorizationIndex]) === colorToPlay) {
+            friendlySquares.push(squareCategorizationIndex);
+            occupiedSquares.push(squareCategorizationIndex);
+            continue;
+        }
+        enemySquares.push(squareCategorizationIndex);
+        occupiedSquares.push(squareCategorizationIndex);
+    }
+    let squaresToStartFrom = structuredClone(friendlySquares);
+    //Rook
+    for (let rookMoveGenerationIndexInFriendlySquares = 0; rookMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; rookMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] != 3 + colorToPlay*6 
+            && board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] != 2 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,10));
+        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-10));
+        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,1));
+        moveList = moveList.concat(exploreRookDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-1));
+        if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] == 3 + colorToPlay*6) {
+            delete squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares];
+            rookMoveGenerationIndexInFriendlySquares--;
+        }
+    }
+
+    return moveList;
+}
+
+function exploreRookDirection(startSquare, board, friendlySquares, enemySquares, squareDifference) {
+    let RookMoves = [];
+    for (let rookExplorationIndex = startSquare + squareDifference; 
+        board[rookExplorationIndex] != 13 && !friendlySquares.includes(rookExplorationIndex); rookExplorationIndex += squareDifference) {
+            if (enemySquares.includes(rookExplorationIndex)) {
+                RookMoves.push(startSquare*100 + rookExplorationIndex);
+                break;
+            }
+            RookMoves.push(startSquare*100 + rookExplorationIndex);
+    }
+    return RookMoves;
 }
 
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
