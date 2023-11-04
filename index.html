@@ -19,8 +19,8 @@
                                     .insertAdjacentHTML("beforeend",'<div class="clickLocationDetector" id="square'
                                     + (rank*8+file) + '" style="left: '
                                     + (file*10.625) + 'vh; top: '
-                                    + (rank*10.625) + 'vh;" onclick="squareClicked(chessboard,'
-                                    + (rank*8+file) + ');"></div>');
+                                    + (rank*10.625) + 'vh;" onclick="squareClickEvent('
+                                    + (rank*8+file) + ', mainBoard);"></div>');
                                 }
                             }
                         </script>

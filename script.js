@@ -98,13 +98,22 @@ function interpretFEN(FENString) {
     return boardToReturn;
 }
 
-function generateMoves(board) {
+function generateMoves(board, makeCheckCheck = true) {
     let moveList = [];
     let colorToPlay = board[120];
     let emptySquares = Array();
     let occupiedSquares = Array();
     let friendlySquares = Array();
     let enemySquares = Array();
+    let attackedSquares = [];
+    if (makeCheckCheck) {
+        board[120] = (board[120]+1)%2;
+        let rawNextMoves = generateMoves(board, false);
+        board[120] = (board[120]+1)%2;
+        for (let attackedSquareIndex = 0; attackedSquareIndex < rawNextMoves.length; attackedSquareIndex++) {
+            attackedSquares.push(rawNextMoves[attackedSquareIndex]%100);
+        }
+    }
     for (let squareCategorizationIndex = 21; squareCategorizationIndex < 99; squareCategorizationIndex++) {
         if (!standardBoardToBuffered.includes(squareCategorizationIndex)) {
             continue;
@@ -121,6 +130,7 @@ function generateMoves(board) {
         enemySquares.push(squareCategorizationIndex);
         occupiedSquares.push(squareCategorizationIndex);
     }
+    
     let squaresToStartFrom = structuredClone(friendlySquares);
     //Rook
     for (let rookMoveGenerationIndexInFriendlySquares = 0; rookMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; rookMoveGenerationIndexInFriendlySquares++) {
@@ -157,7 +167,7 @@ function generateMoves(board) {
         if (board[squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares]] != 5 + colorToPlay*6 ) {
             continue;
         }
-        moveList = moveList.concat(findKnightMoves(squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares], friendlySquares));
+        moveList = moveList.concat(findMappedMoves(squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares], friendlySquares, [21,19,12,-12,-19,-21,-8,8],[]));
         delete squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares];
         knightMoveGenerationIndexInFriendlySquares--;
     }
@@ -171,6 +181,9 @@ function generateMoves(board) {
         delete squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares];
         pawnMoveGenerationIndexInFriendlySquares--;
     }
+
+    //King
+    moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, [-11,-10,-9,-1,1,9,10,11],attackedSquares));
 
     return moveList;
 }
@@ -187,17 +200,18 @@ function exploreSlidingDirection(startSquare, board, friendlySquares, enemySquar
     }
     return slideMoves;
 }
-function findKnightMoves(startSquare, friendlySquares) {
-    let knightDestinations = [21,19,12,-12,-19,-21,-8,8];
-    let knightMoves = [];
-    for (let knightDestinationIndex = 0; knightDestinationIndex < 8; knightDestinationIndex++) {
-        if (!standardBoardToBuffered.includes(startSquare + knightDestinations[knightDestinationIndex])
-        || friendlySquares.includes(startSquare + knightDestinations[knightDestinationIndex])) {
+function findMappedMoves(startSquare, friendlySquares, destinationDifferences,attackedSquares) {
+    let mappedDestinations = destinationDifferences;
+    let mappedMoves = [];
+    for (let mappedDestinationIndex = 0; mappedDestinationIndex < 8; mappedDestinationIndex++) {
+        if (!standardBoardToBuffered.includes(startSquare + mappedDestinations[mappedDestinationIndex])
+        || friendlySquares.includes(startSquare + mappedDestinations[mappedDestinationIndex])
+        || attackedSquares.includes(startSquare + mappedDestinations[mappedDestinationIndex])) {
             continue;
         }
-        knightMoves.push(startSquare*100+startSquare + knightDestinations[knightDestinationIndex]);
+        mappedMoves.push(startSquare*100+startSquare + mappedDestinations[mappedDestinationIndex]);
     }
-    return knightMoves;
+    return mappedMoves;
 }
 function findPawnMoves(startSquare, board, enemySquares, emptySquares) {
     let pawnMoves = [];
@@ -223,4 +237,31 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares) {
     }
     return pawnMoves;
 }
+
+function makeMove(move,board) {
+    moveParts = move.toString().match(/\d{2}/g);
+
+    if (+moveParts[1] == board[122] && board[moveParts[0]] % 6 == 0) {
+        board[moveParts[1] - 10 * (board[120] * -2 + 1)] = 0;
+    }
+    board[122] = 0;
+    if (Math.abs(moveParts[0]-moveParts[1]) == 20 && board[moveParts[0]] % 6 == 0) {
+        board[122] = moveParts[1] - 10 * (board[120] * -2 + 1);
+    }
+    [board[moveParts[1]], board[moveParts[0]]] = [board[moveParts[0]], 0];
+    board[120] = (board[120]+1)%2;
+}
+
+function squareClickEvent(square, board) {
+    if (clickedSquare == 0) {
+        clickedSquare = standardBoardToBuffered[invertedBoardToStandard[square]];
+        return;
+    }
+    makeMove(clickedSquare*100+standardBoardToBuffered[invertedBoardToStandard[square]],board);
+    clickedSquare = 0;
+    
+    displayBoard(board);
+}
+
+var clickedSquare = 0;
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
