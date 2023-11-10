@@ -106,14 +106,9 @@ function generateMoves(board, makeCheckCheck = true) {
     let friendlySquares = Array();
     let enemySquares = Array();
     let attackedSquares = [];
-    if (makeCheckCheck) {
-        board[120] = (board[120]+1)%2;
-        let rawNextMoves = generateMoves(board, false);
-        board[120] = (board[120]+1)%2;
-        for (let attackedSquareIndex = 0; attackedSquareIndex < rawNextMoves.length; attackedSquareIndex++) {
-            attackedSquares.push(rawNextMoves[attackedSquareIndex]%100);
-        }
-    }
+    let friendlyKingSquare = board.indexOf(6*colorToPlay+1);
+    let checkingMoves = [];
+
     for (let squareCategorizationIndex = 21; squareCategorizationIndex < 99; squareCategorizationIndex++) {
         if (!standardBoardToBuffered.includes(squareCategorizationIndex)) {
             continue;
@@ -130,7 +125,19 @@ function generateMoves(board, makeCheckCheck = true) {
         enemySquares.push(squareCategorizationIndex);
         occupiedSquares.push(squareCategorizationIndex);
     }
-    
+
+    if (makeCheckCheck) {
+    board[120] = (board[120]+1)%2;
+    let rawNextMoves = generateMoves(board, false);
+    board[120] = (board[120]+1)%2;
+    for (let attackedSquareIndex = 0; attackedSquareIndex < rawNextMoves.length; attackedSquareIndex++) {
+        attackedSquares.push(rawNextMoves[attackedSquareIndex]%100);
+        if (rawNextMoves[attackedSquareIndex]%100 == friendlyKingSquare) {
+            //King is under attack
+            checkingMoves.push(rawNextMoves[attackedSquareIndex]);
+        }
+    }
+    }
     let squaresToStartFrom = structuredClone(friendlySquares);
     //Rook
     for (let rookMoveGenerationIndexInFriendlySquares = 0; rookMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; rookMoveGenerationIndexInFriendlySquares++) {
@@ -143,7 +150,7 @@ function generateMoves(board, makeCheckCheck = true) {
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,1));
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-1));
         if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] == 3 + colorToPlay*6) {
-            delete squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares];
+            squaresToStartFrom.splice(rookMoveGenerationIndexInFriendlySquares,1);
             rookMoveGenerationIndexInFriendlySquares--;
         }
     }
@@ -158,7 +165,7 @@ function generateMoves(board, makeCheckCheck = true) {
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-11));
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,9));
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-9));
-        delete squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares];
+        squaresToStartFrom.splice(bishopMoveGenerationIndexInFriendlySquares,1);
         bishopMoveGenerationIndexInFriendlySquares--;
     }
 
@@ -168,7 +175,7 @@ function generateMoves(board, makeCheckCheck = true) {
             continue;
         }
         moveList = moveList.concat(findMappedMoves(squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares], friendlySquares, [21,19,12,-12,-19,-21,-8,8],[]));
-        delete squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares];
+        squaresToStartFrom.splice(knightMoveGenerationIndexInFriendlySquares,1);
         knightMoveGenerationIndexInFriendlySquares--;
     }
 
@@ -178,12 +185,51 @@ function generateMoves(board, makeCheckCheck = true) {
             continue;
         }
         moveList = moveList.concat(findPawnMoves(squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares], board, enemySquares, emptySquares));
-        delete squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares];
+        squaresToStartFrom.splice(pawnMoveGenerationIndexInFriendlySquares,1);
         pawnMoveGenerationIndexInFriendlySquares--;
     }
 
     //King
     moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, [-11,-10,-9,-1,1,9,10,11],attackedSquares));
+
+    for (let checkingMoveIndex = 0; checkingMoveIndex < checkingMoves.length; checkingMoveIndex ++) {
+        let checkOriginSquare = Math.floor(checkingMoves[checkingMoveIndex]/100);
+        let interjectionSquares = [];
+        if (1 < board[checkOriginSquare]%6 < 5) {
+            //vertical move filewise
+            if (checkOriginSquare%10 == friendlyKingSquare%10) {
+                findInterjections(friendlyKingSquare, checkOriginSquare, board, interjectionSquares, 10)
+            }
+            //vertical move rankwise
+            if (Math.round(checkOriginSquare/10) == Math.round(friendlyKingSquare/10)) {
+                findInterjections(friendlyKingSquare, checkOriginSquare, board, interjectionSquares, 1)
+            }
+            //diagonal 11
+            if ((checkOriginSquare-friendlyKingSquare)%11 == 0) {
+                findInterjections(friendlyKingSquare, checkOriginSquare, board, interjectionSquares, 11)
+            }
+            //diagonal 9
+            if ((checkOriginSquare-friendlyKingSquare)%9 == 0) {
+                findInterjections(friendlyKingSquare, checkOriginSquare, board, interjectionSquares, 9)
+            }
+        }
+        for (let filteringIndex = 1; filteringIndex-1 < moveList.length; filteringIndex++) {
+            //king escape
+            if (Math.floor(moveList[filteringIndex-1]/100) == friendlyKingSquare) {
+                continue;
+            }
+            //capturing
+            if (moveList[filteringIndex-1]%100 == checkOriginSquare) {
+                continue;
+            }
+            //interjection
+            if (interjectionSquares.includes(moveList[filteringIndex-1]%100)) {
+                continue;
+            }
+            moveList.splice(filteringIndex-1,1);
+            filteringIndex--;
+        }
+    }
 
     return moveList;
 }
@@ -237,6 +283,18 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares) {
     }
     return pawnMoves;
 }
+function findInterjections(friendlyKingSquare, checkOriginSquare, board, interjectionSquares, squareDifference) {
+    if (friendlyKingSquare > checkOriginSquare) {
+        for (let moveIndexer = checkOriginSquare + squareDifference; moveIndexer != friendlyKingSquare && board[moveIndexer] != 13; moveIndexer += squareDifference) {
+            interjectionSquares.push(moveIndexer);
+        }
+    }
+    if (friendlyKingSquare < checkOriginSquare) {
+        for (let moveIndexer = checkOriginSquare - squareDifference; moveIndexer != friendlyKingSquare && board[moveIndexer] != 13; moveIndexer -= squareDifference) {
+            interjectionSquares.push(moveIndexer);
+        }
+    }
+}
 
 function makeMove(move,board) {
     moveParts = move.toString().match(/\d{2}/g);
@@ -250,6 +308,9 @@ function makeMove(move,board) {
     }
     [board[moveParts[1]], board[moveParts[0]]] = [board[moveParts[0]], 0];
     board[120] = (board[120]+1)%2;
+
+    clearInterfaceChessboard();
+    highlightMoveList(generateMoves(board));
 }
 
 function squareClickEvent(square, board) {
@@ -261,6 +322,17 @@ function squareClickEvent(square, board) {
     clickedSquare = 0;
     
     displayBoard(board);
+}
+
+function clearInterfaceChessboard() {
+    for (let colorClearIndex = 0; colorClearIndex < 64; colorClearIndex++) {
+      document.getElementById("square"+colorClearIndex).style.backgroundColor = "#00000000";
+    }
+  }
+function highlightMoveList(moveList) {
+    for (let highlightingIndex in moveList) {
+        document.getElementById("square"+invertedBoardToStandard.indexOf(standardBoardToBuffered.indexOf(moveList[highlightingIndex]%100))).style.backgroundColor = "#0000ff40";
+    }
 }
 
 var clickedSquare = 0;
