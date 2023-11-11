@@ -21,6 +21,7 @@ const pieceSymbolToCode = ["K","Q","R","B","N","P","k","q","r","b","n","p"];
 const colorToCode = ["w","b"];
 const possibleEmptySquareNumbers = ["/","1","2","3","4","5","6","7","8"];
 const fileNames = ["a","b","c","d","e","f","g","h"];
+const directions = [10,11,1,-9,-10,-11,-1,9];
  
 function pieceToColor(pieceCode) {
     if (0 < pieceCode && pieceCode < 7) {return 0;}
@@ -108,6 +109,7 @@ function generateMoves(board, makeCheckCheck = true) {
     let attackedSquares = [];
     let friendlyKingSquare = board.indexOf(6*colorToPlay+1);
     let checkingMoves = [];
+    let squaresOfPinnedPieces = Array(8).fill(0);
 
     for (let squareCategorizationIndex = 21; squareCategorizationIndex < 99; squareCategorizationIndex++) {
         if (!standardBoardToBuffered.includes(squareCategorizationIndex)) {
@@ -127,16 +129,39 @@ function generateMoves(board, makeCheckCheck = true) {
     }
 
     if (makeCheckCheck) {
-    board[120] = (board[120]+1)%2;
-    let rawNextMoves = generateMoves(board, false);
-    board[120] = (board[120]+1)%2;
-    for (let attackedSquareIndex = 0; attackedSquareIndex < rawNextMoves.length; attackedSquareIndex++) {
-        attackedSquares.push(rawNextMoves[attackedSquareIndex]%100);
-        if (rawNextMoves[attackedSquareIndex]%100 == friendlyKingSquare) {
-            //King is under attack
-            checkingMoves.push(rawNextMoves[attackedSquareIndex]);
+        board[120] = (board[120]+1)%2;
+        let rawNextMoves = generateMoves(board, false);
+        board[120] = (board[120]+1)%2;
+        for (let attackedSquareIndex = 0; attackedSquareIndex < rawNextMoves.length; attackedSquareIndex++) {
+            attackedSquares.push(rawNextMoves[attackedSquareIndex]%100);
+            if (rawNextMoves[attackedSquareIndex]%100 == friendlyKingSquare) {
+                //King is under attack
+                checkingMoves.push(rawNextMoves[attackedSquareIndex]);
+            }
         }
-    }
+        //Pinned piece locator
+        for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
+            for (let moveIndexer = friendlyKingSquare + directions[pinnedPieceSearchDirectionIndex];
+                board[moveIndexer] != 13; moveIndexer += directions[pinnedPieceSearchDirectionIndex]) {
+                if (friendlySquares.includes(moveIndexer)){
+                    let pieceToBePinned = moveIndexer;
+                    moveIndexer += directions[pinnedPieceSearchDirectionIndex];
+                    while (board[moveIndexer] != 13 && !friendlySquares.includes(moveIndexer)) {
+                        // [2,3,8,9] if vertical check
+                        if ([2,3 + pinnedPieceSearchDirectionIndex%2,8,9 + pinnedPieceSearchDirectionIndex%2].includes(board[moveIndexer])) {
+                            squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex] = pieceToBePinned;
+                            break;
+                        }
+                        if (enemySquares.includes(moveIndexer)) {
+                            break;
+                        }
+                        moveIndexer += directions[pinnedPieceSearchDirectionIndex];
+                    } 
+                    break;
+                }
+            }
+        }
+        console.log(squaresOfPinnedPieces);
     }
     let squaresToStartFrom = structuredClone(friendlySquares);
     //Rook
@@ -192,6 +217,19 @@ function generateMoves(board, makeCheckCheck = true) {
     //King
     moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, [-11,-10,-9,-1,1,9,10,11],attackedSquares));
 
+    for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
+        for (let filteringIndex = 1; filteringIndex-1 < moveList.length; filteringIndex++) {
+            if (Math.floor(moveList[filteringIndex-1]/100) != squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex]) {
+                continue;
+            }
+            if (((Math.floor(moveList[filteringIndex-1]/100) - moveList[filteringIndex-1])%100)%directions[pinnedPieceSearchDirectionIndex] == 0) {
+                continue;
+            }
+            moveList.splice(filteringIndex-1,1);
+            filteringIndex--;
+        }
+    }
+
     for (let checkingMoveIndex = 0; checkingMoveIndex < checkingMoves.length; checkingMoveIndex ++) {
         let checkOriginSquare = Math.floor(checkingMoves[checkingMoveIndex]/100);
         let interjectionSquares = [];
@@ -230,6 +268,8 @@ function generateMoves(board, makeCheckCheck = true) {
             filteringIndex--;
         }
     }
+
+
 
     return moveList;
 }
@@ -296,43 +336,74 @@ function findInterjections(friendlyKingSquare, checkOriginSquare, board, interje
     }
 }
 
-function makeMove(move,board) {
+function makeMove(move,board,legalMoves) {
+    if (!legalMoves.includes(move)) {
+        return [false];
+    }
+    let capturedPiece = 0;
+    let previousEnPassantSquare = board[122];
     moveParts = move.toString().match(/\d{2}/g);
 
     if (+moveParts[1] == board[122] && board[moveParts[0]] % 6 == 0) {
+        capturedPiece = board[moveParts[1] - 10 * (board[120] * -2 + 1)];
         board[moveParts[1] - 10 * (board[120] * -2 + 1)] = 0;
     }
     board[122] = 0;
     if (Math.abs(moveParts[0]-moveParts[1]) == 20 && board[moveParts[0]] % 6 == 0) {
         board[122] = moveParts[1] - 10 * (board[120] * -2 + 1);
     }
+    if (board[moveParts[1]] != 0) {
+        capturedPiece = board[moveParts[1]];
+    }
     [board[moveParts[1]], board[moveParts[0]]] = [board[moveParts[0]], 0];
     board[120] = (board[120]+1)%2;
 
-    clearInterfaceChessboard();
-    highlightMoveList(generateMoves(board));
+    return [true,capturedPiece, previousEnPassantSquare];
+}
+
+function unmakeMove(move, board, capturedPiece, previousEnPassantSquare) {
+    moveParts = move.toString().match(/\d{2}/g); 
+
+    if (+moveParts[1] == previousEnPassantSquare && board[moveParts[1]] % 6 == 0) {
+        board[moveParts[1] - 10 * (board[120] * -2 + 1)] = capturedPiece;
+    }
+    board[122] = previousEnPassantSquare;
+    [board[moveParts[0]], board[moveParts[1]]] = [board[moveParts[1]], capturedPiece];
+    board[120] = (board[120]+1)%2;
 }
 
 function squareClickEvent(square, board) {
     if (clickedSquare == 0) {
         clickedSquare = standardBoardToBuffered[invertedBoardToStandard[square]];
+        highlightSquare(clickedSquare, "#ff000040");
         return;
     }
-    makeMove(clickedSquare*100+standardBoardToBuffered[invertedBoardToStandard[square]],board);
-    clickedSquare = 0;
-    
-    displayBoard(board);
+    if (standardBoardToBuffered[invertedBoardToStandard[square]] == clickedSquare) {
+        highlightSquare(clickedSquare, "#00000000");
+        clickedSquare = 0;
+        return;
+    }
+    if (makeMove(clickedSquare*100+standardBoardToBuffered[invertedBoardToStandard[square]],board,generateMoves(board))[0]) {
+        clearInterfaceChessboard();
+        highlightMoveList(generateMoves(board));
+        highlightSquare(clickedSquare, "#00000000");
+        clickedSquare = 0;
+        displayBoard(board);
+    }
 }
 
 function clearInterfaceChessboard() {
     for (let colorClearIndex = 0; colorClearIndex < 64; colorClearIndex++) {
-      document.getElementById("square"+colorClearIndex).style.backgroundColor = "#00000000";
+        highlightSquare(standardBoardToBuffered[colorClearIndex], "#00000000");
     }
   }
 function highlightMoveList(moveList) {
     for (let highlightingIndex in moveList) {
-        document.getElementById("square"+invertedBoardToStandard.indexOf(standardBoardToBuffered.indexOf(moveList[highlightingIndex]%100))).style.backgroundColor = "#0000ff40";
+        highlightSquare(moveList[highlightingIndex]%100,"#0000ff40");
     }
+}
+function highlightSquare(bufferedSquare, colorForHighlight) {
+    document.getElementById("square"+invertedBoardToStandard.indexOf(standardBoardToBuffered.indexOf(bufferedSquare))).style.backgroundColor = colorForHighlight;
 }
 
 var clickedSquare = 0;

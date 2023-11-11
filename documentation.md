@@ -21,10 +21,19 @@
 4 digit number:  
 ABCD  
 AB: starting square  
-CD: destination square  
+CD: destination square
+
+FOR PROMOTIONS:
+AB: Origin Square
+C: Move Type (0 for left capture, 1 for move forwards, 2 for left capture)
+D: Promotion Piece (q r b n) -> (2 3 4 5)
 
 ## Function documentation
 
 ### initializeBoard()
 
 Creates new chessboard array. Sets buffers, and all squares and parameters as 0.
+
+### makeMove()
+
+Returns array: [moveWasLegal, pieceCaptured]
