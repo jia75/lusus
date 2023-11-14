@@ -25,7 +25,7 @@ CD: destination square
 
 FOR PROMOTIONS:
 AB: Origin Square
-C: Move Type (0 for left capture, 1 for move forwards, 2 for left capture)
+C: Move Type (0 for 9diff capture, 1 for move forwards, 2 for 11diff)
 D: Promotion Piece (q r b n) -> (2 3 4 5)
 
 ## Function documentation

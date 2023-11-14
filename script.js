@@ -139,6 +139,7 @@ function generateMoves(board, makeCheckCheck = true) {
                 checkingMoves.push(rawNextMoves[attackedSquareIndex]);
             }
         }
+        
         //Pinned piece locator
         for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
             for (let moveIndexer = friendlyKingSquare + directions[pinnedPieceSearchDirectionIndex];
@@ -161,9 +162,12 @@ function generateMoves(board, makeCheckCheck = true) {
                 }
             }
         }
-        console.log(squaresOfPinnedPieces);
     }
     let squaresToStartFrom = structuredClone(friendlySquares);
+    if (!makeCheckCheck) {
+        enemySquares.concat(friendlySquares);
+        friendlySquares = [];
+    }
     //Rook
     for (let rookMoveGenerationIndexInFriendlySquares = 0; rookMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; rookMoveGenerationIndexInFriendlySquares++) {
         if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] != 3 + colorToPlay*6 
@@ -209,13 +213,18 @@ function generateMoves(board, makeCheckCheck = true) {
         if (board[squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares]] != 6 + colorToPlay*6 ) {
             continue;
         }
-        moveList = moveList.concat(findPawnMoves(squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares], board, enemySquares, emptySquares));
+        moveList = moveList.concat(findPawnMoves(squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares], board, enemySquares, emptySquares, makeCheckCheck));
         squaresToStartFrom.splice(pawnMoveGenerationIndexInFriendlySquares,1);
         pawnMoveGenerationIndexInFriendlySquares--;
     }
 
     //King
     moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, [-11,-10,-9,-1,1,9,10,11],attackedSquares));
+    //Castling
+    //Kingside
+    /*if (Math.Floor((board[120]*Math.floor(board[121]/4) + (board[120]+1)%2*(board[121]%4))/2) == 1
+    && ) {
+    }*/
 
     for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
         for (let filteringIndex = 1; filteringIndex-1 < moveList.length; filteringIndex++) {
@@ -299,13 +308,39 @@ function findMappedMoves(startSquare, friendlySquares, destinationDifferences,at
     }
     return mappedMoves;
 }
-function findPawnMoves(startSquare, board, enemySquares, emptySquares) {
+function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheckCheck) {
     let pawnMoves = [];
     //0 -> 1
     //1 -> -1
     let colorMultiplier = board[120] * -2 + 1;
     let enPassantTarget = board[122];
     enemySquares.push(enPassantTarget);
+    /*
+    PROMOTION
+    if (boardIndexToRank(startSquare) == [6,1][board[120]]) {
+        if (enemySquares.includes(startSquare + 9*colorMultiplier)) {
+            pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
+        }
+        if (enemySquares.includes(startSquare + 11*colorMultiplier)) {
+            pawnMoves.push(startSquare*100+22);
+            pawnMoves.push(startSquare*100+23);
+            pawnMoves.push(startSquare*100+24);
+            pawnMoves.push(startSquare*100+25);
+        }
+        if (emptySquares.includes(startSquare + 10*colorMultiplier)) {
+            pawnMoves.push(startSquare*100+12);
+            pawnMoves.push(startSquare*100+13);
+            pawnMoves.push(startSquare*100+14);
+            pawnMoves.push(startSquare*100+15);
+        }
+        return pawnMoves;
+    }*/
+    if (!makeCheckCheck) {
+        pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
+        pawnMoves.push(startSquare*100+startSquare + 11*colorMultiplier);
+        enemySquares.pop();
+        return pawnMoves;
+    }
     if (enemySquares.includes(startSquare + 9*colorMultiplier)) {
         pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
     }
@@ -343,15 +378,21 @@ function makeMove(move,board,legalMoves) {
     let capturedPiece = 0;
     let previousEnPassantSquare = board[122];
     moveParts = move.toString().match(/\d{2}/g);
-
+    //en passant case
     if (+moveParts[1] == board[122] && board[moveParts[0]] % 6 == 0) {
         capturedPiece = board[moveParts[1] - 10 * (board[120] * -2 + 1)];
         board[moveParts[1] - 10 * (board[120] * -2 + 1)] = 0;
     }
     board[122] = 0;
+    //double pawn push
     if (Math.abs(moveParts[0]-moveParts[1]) == 20 && board[moveParts[0]] % 6 == 0) {
         board[122] = moveParts[1] - 10 * (board[120] * -2 + 1);
     }
+    //promotion (only queen)
+    if (board[moveParts[0]]%6 == 0 && [0,7].includes(boardIndexToRank(moveParts[1]))) {
+        board[moveParts[0]] = 2 + board[120]*6;
+    }
+    //capturing
     if (board[moveParts[1]] != 0) {
         capturedPiece = board[moveParts[1]];
     }
