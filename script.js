@@ -102,6 +102,7 @@ function interpretFEN(FENString) {
 function generateMoves(board, makeCheckCheck = true) {
     let moveList = [];
     let colorToPlay = board[120];
+    let colorMultiplier = board[120] * -2 + 1;
     let emptySquares = Array();
     let occupiedSquares = Array();
     let friendlySquares = Array();
@@ -220,11 +221,23 @@ function generateMoves(board, makeCheckCheck = true) {
 
     //King
     moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, [-11,-10,-9,-1,1,9,10,11],attackedSquares));
+
     //Castling
+    let castlingAvailability = [board[121]%2, Math.floor(board[121]/2)%2, Math.floor(board[121]/4)%2, Math.floor(board[121]/8)];
+    let intermediateSquareIsOk;
+    let destinationSquareIsOk;
     //Kingside
-    /*if (Math.Floor((board[120]*Math.floor(board[121]/4) + (board[120]+1)%2*(board[121]%4))/2) == 1
-    && ) {
-    }*/
+    if (castlingAvailability[colorToPlay*2] == 1
+    && intermediateSquareIsOk && destinationSquareIsOk) {
+        moveList.push(friendlyKingSquare*100+friendlyKingSquare+colorMultiplier*2);
+    }
+    //QueenSide
+    intermediateSquareIsOk = (board[friendlyKingSquare-colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier) && board[friendlyKingSquare-colorMultiplier*3] == 0);
+    destinationSquareIsOk = (board[friendlyKingSquare-colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier*2));
+    if (castlingAvailability[colorToPlay*2 + 1] == 1
+        && intermediateSquareIsOk && destinationSquareIsOk) {
+            moveList.push(friendlyKingSquare*100+friendlyKingSquare-colorMultiplier*2);
+        }
 
     for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
         for (let filteringIndex = 1; filteringIndex-1 < moveList.length; filteringIndex++) {
@@ -445,6 +458,33 @@ function highlightMoveList(moveList) {
 }
 function highlightSquare(bufferedSquare, colorForHighlight) {
     document.getElementById("square"+invertedBoardToStandard.indexOf(standardBoardToBuffered.indexOf(bufferedSquare))).style.backgroundColor = colorForHighlight;
+}
+
+function generatePossiblePositions(board, depth, showPerMove=false) {
+    if (depth == 0) {
+        return [board];
+    }
+    let moves = generateMoves(board);
+    let positions = [];
+    for (let moveToMake of moves) {
+        let temporaryBoard = structuredClone(board);
+        makeMove(moveToMake, temporaryBoard, [moveToMake]);
+        newMoves = generatePossiblePositions(temporaryBoard, depth - 1);
+        positions = positions.concat(newMoves);
+        if (showPerMove) {
+            console.log(bufferedIndexToCoordinates(Math.floor(moveToMake/100))+(bufferedIndexToCoordinates(moveToMake%100)+": " + newMoves.length))
+        }
+    }
+    
+    return positions;
+}
+function testingFullMoveGeneration(board, maxLayer) {
+    let currentDepth = 0;
+    while (currentDepth-1 < maxLayer) {
+        let start = Date.now();
+        console.log(currentDepth + ": " + generatePossiblePositions(board,currentDepth,true).length + "(in "+(-start+Date.now())+"ms)");
+        currentDepth++;
+    }
 }
 
 var clickedSquare = 0;
