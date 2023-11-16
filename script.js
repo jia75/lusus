@@ -220,21 +220,20 @@ function generateMoves(board, makeCheckCheck = true) {
     }
 
     //King
-    //console.log(attackedSquares);
     moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, directions,attackedSquares));
 
     //Castling
     let castlingAvailability = [board[121]%2, Math.floor(board[121]/2)%2, Math.floor(board[121]/4)%2, Math.floor(board[121]/8)];
-    let intermediateSquareIsOk;
-    let destinationSquareIsOk;
+    let intermediateSquareIsOk  = (board[friendlyKingSquare+colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier));
+    let destinationSquareIsOk = (board[friendlyKingSquare+colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier*2));
     //Kingside
     if (castlingAvailability[colorToPlay*2] == 1
     && intermediateSquareIsOk && destinationSquareIsOk) {
         moveList.push(friendlyKingSquare*100+friendlyKingSquare+colorMultiplier*2);
     }
     //QueenSide
-    intermediateSquareIsOk = (board[friendlyKingSquare-colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier) && board[friendlyKingSquare-colorMultiplier*3] == 0);
-    destinationSquareIsOk = (board[friendlyKingSquare-colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier*2));
+    intermediateSquareIsOk = (board[friendlyKingSquare-colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare-colorMultiplier) && board[friendlyKingSquare-colorMultiplier*3] == 0);
+    destinationSquareIsOk = (board[friendlyKingSquare-colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare-colorMultiplier*2));
     if (castlingAvailability[colorToPlay*2 + 1] == 1
         && intermediateSquareIsOk && destinationSquareIsOk) {
             moveList.push(friendlyKingSquare*100+friendlyKingSquare-colorMultiplier*2);
@@ -331,11 +330,13 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheck
     if (enPassantTarget != 0) {
     enemySquares.push(enPassantTarget);
     }
-    /*
-    PROMOTION
+    //PROMOTION
     if (boardIndexToRank(startSquare) == [6,1][board[120]]) {
         if (enemySquares.includes(startSquare + 9*colorMultiplier)) {
-            pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
+            pawnMoves.push(startSquare*100+2);
+            pawnMoves.push(startSquare*100+3);
+            pawnMoves.push(startSquare*100+4);
+            pawnMoves.push(startSquare*100+5);
         }
         if (enemySquares.includes(startSquare + 11*colorMultiplier)) {
             pawnMoves.push(startSquare*100+22);
@@ -350,7 +351,7 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheck
             pawnMoves.push(startSquare*100+15);
         }
         return pawnMoves;
-    }*/
+    }
     if (!makeCheckCheck) {
         if (standardBoardToBuffered.includes(startSquare + 9*colorMultiplier)) {
             pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
@@ -401,6 +402,7 @@ function makeMove(move,board,legalMoves) {
     }
     let capturedPiece = 0;
     let previousEnPassantSquare = board[122];
+    let colorMultiplier = board[120] * -2 + 1;
     moveParts = move.toString().match(/\d{2}/g);
     //en passant case
     if (+moveParts[1] == board[122] && board[moveParts[0]] % 6 == 0) {
@@ -412,13 +414,26 @@ function makeMove(move,board,legalMoves) {
     if (Math.abs(moveParts[0]-moveParts[1]) == 20 && board[moveParts[0]] % 6 == 0) {
         board[122] = moveParts[1] - 10 * (board[120] * -2 + 1);
     }
-    //promotion (only queen)
-    if (board[moveParts[0]]%6 == 0 && [0,7].includes(boardIndexToRank(moveParts[1]))) {
-        board[moveParts[0]] = 2 + board[120]*6;
+    //promotion
+    if (boardIndexToRank(moveParts[0]) == [6,1][board[120]] && board[moveParts[0]]%6 == 0) {
+        board[moveParts[0]] = moveParts[1]%10 + board[120]*6;
+        moveParts[1] = +moveParts[0] + colorMultiplier*[9,10,11][moveParts[1]-moveParts[1]%10];
     }
     //capturing
     if (board[moveParts[1]] != 0) {
         capturedPiece = board[moveParts[1]];
+    }
+    //castling
+    if (board[moveParts[0]]%6 == 1) {
+        //kingside
+        if (moveParts[1]-moveParts[0] == 2*colorMultiplier) {
+            [board[+moveParts[0]+colorMultiplier], board[+moveParts[1]+colorMultiplier]] = [board[+moveParts[1]+colorMultiplier], 0];
+        }
+        //queenside
+        if (moveParts[0]-moveParts[1] == 2*colorMultiplier) {
+            [board[+moveParts[0]-colorMultiplier], board[+moveParts[1]-2*colorMultiplier]] = [board[+moveParts[1]-2*colorMultiplier, 0]];
+        }
+
     }
     [board[moveParts[1]], board[moveParts[0]]] = [board[moveParts[0]], 0];
     board[120] = (board[120]+1)%2;
@@ -438,17 +453,24 @@ function unmakeMove(move, board, capturedPiece, previousEnPassantSquare) {
 }
 
 function squareClickEvent(square, board) {
+    let bufferedSquare = standardBoardToBuffered[invertedBoardToStandard[square]];
     if (clickedSquare == 0) {
-        clickedSquare = standardBoardToBuffered[invertedBoardToStandard[square]];
+        clickedSquare = bufferedSquare;
         highlightSquare(clickedSquare, "#ff000040");
         return;
     }
-    if (standardBoardToBuffered[invertedBoardToStandard[square]] == clickedSquare) {
+    if (bufferedSquare == clickedSquare) {
         highlightSquare(clickedSquare, "#00000000");
         clickedSquare = 0;
         return;
     }
-    if (makeMove(clickedSquare*100+standardBoardToBuffered[invertedBoardToStandard[square]],board,generateMoves(board))[0]) {
+    if (board[clickedSquare]%6 == 0 && boardIndexToRank(bufferedSquare) == [7,0][board[120]]) {
+        if (![9,10,11,-9,-10,-11].includes(bufferedSquare-clickedSquare)) {
+            return;
+        }
+        bufferedSquare = 2+([9,10,11,-9,-10,-11].indexOf(bufferedSquare-clickedSquare)%3)*10;
+    }
+    if (makeMove(clickedSquare*100+bufferedSquare,board,generateMoves(board))[0]) {
         clearInterfaceChessboard();
         highlightMoveList(generateMoves(board));
         highlightSquare(clickedSquare, "#00000000");
@@ -501,3 +523,4 @@ function testingFullMoveGeneration(board, maxLayer, moreInfo= false) {
 
 var clickedSquare = 0;
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+mainBoard = interpretFEN('rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8');
