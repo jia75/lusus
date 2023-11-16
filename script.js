@@ -166,7 +166,7 @@ function generateMoves(board, makeCheckCheck = true) {
     }
     let squaresToStartFrom = structuredClone(friendlySquares);
     if (!makeCheckCheck) {
-        enemySquares.concat(friendlySquares);
+        enemySquares = enemySquares.concat(friendlySquares);
         friendlySquares = [];
     }
     //Rook
@@ -176,8 +176,8 @@ function generateMoves(board, makeCheckCheck = true) {
             continue;
         }
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,10));
-        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-10));
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,1));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-10));
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-1));
         if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] == 3 + colorToPlay*6) {
             squaresToStartFrom.splice(rookMoveGenerationIndexInFriendlySquares,1);
@@ -192,9 +192,9 @@ function generateMoves(board, makeCheckCheck = true) {
             continue;
         }
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,11));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-9));
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-11));
         moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,9));
-        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-9));
         squaresToStartFrom.splice(bishopMoveGenerationIndexInFriendlySquares,1);
         bishopMoveGenerationIndexInFriendlySquares--;
     }
@@ -220,7 +220,8 @@ function generateMoves(board, makeCheckCheck = true) {
     }
 
     //King
-    moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, [-11,-10,-9,-1,1,9,10,11],attackedSquares));
+    //console.log(attackedSquares);
+    moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, directions,attackedSquares));
 
     //Castling
     let castlingAvailability = [board[121]%2, Math.floor(board[121]/2)%2, Math.floor(board[121]/4)%2, Math.floor(board[121]/8)];
@@ -243,8 +244,8 @@ function generateMoves(board, makeCheckCheck = true) {
         for (let filteringIndex = 1; filteringIndex-1 < moveList.length; filteringIndex++) {
             if (Math.floor(moveList[filteringIndex-1]/100) != squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex]) {
                 continue;
-            }
-            if (((Math.floor(moveList[filteringIndex-1]/100) - moveList[filteringIndex-1])%100)%directions[pinnedPieceSearchDirectionIndex] == 0) {
+            } 
+            if ((Math.abs(Math.floor(moveList[filteringIndex-1]/100) - moveList[filteringIndex-1]%100))%(directions[pinnedPieceSearchDirectionIndex]) == 0) {
                 continue;
             }
             moveList.splice(filteringIndex-1,1);
@@ -327,7 +328,9 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheck
     //1 -> -1
     let colorMultiplier = board[120] * -2 + 1;
     let enPassantTarget = board[122];
+    if (enPassantTarget != 0) {
     enemySquares.push(enPassantTarget);
+    }
     /*
     PROMOTION
     if (boardIndexToRank(startSquare) == [6,1][board[120]]) {
@@ -349,18 +352,26 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheck
         return pawnMoves;
     }*/
     if (!makeCheckCheck) {
-        pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
-        pawnMoves.push(startSquare*100+startSquare + 11*colorMultiplier);
+        if (standardBoardToBuffered.includes(startSquare + 9*colorMultiplier)) {
+            pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
+        }
+        if (standardBoardToBuffered.includes(startSquare + 11*colorMultiplier)) {
+            pawnMoves.push(startSquare*100+startSquare + 11*colorMultiplier);
+        }
         enemySquares.pop();
         return pawnMoves;
     }
+
     if (enemySquares.includes(startSquare + 9*colorMultiplier)) {
         pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
     }
     if (enemySquares.includes(startSquare + 11*colorMultiplier)) {
         pawnMoves.push(startSquare*100+startSquare + 11*colorMultiplier);
     }
-    enemySquares.pop();
+    if (enPassantTarget != 0) {
+        enemySquares.pop();
+    }
+
     if (emptySquares.includes(startSquare + 10*colorMultiplier)) {
         pawnMoves.push(startSquare*100+startSquare + 10*colorMultiplier);
     } else {
@@ -465,6 +476,7 @@ function generatePossiblePositions(board, depth, showPerMove=false) {
         return [board];
     }
     let moves = generateMoves(board);
+    moves.sort((a,b)=>a-b);
     let positions = [];
     for (let moveToMake of moves) {
         let temporaryBoard = structuredClone(board);
@@ -478,11 +490,11 @@ function generatePossiblePositions(board, depth, showPerMove=false) {
     
     return positions;
 }
-function testingFullMoveGeneration(board, maxLayer) {
+function testingFullMoveGeneration(board, maxLayer, moreInfo= false) {
     let currentDepth = 0;
     while (currentDepth-1 < maxLayer) {
         let start = Date.now();
-        console.log(currentDepth + ": " + generatePossiblePositions(board,currentDepth,true).length + "(in "+(-start+Date.now())+"ms)");
+        console.log(currentDepth + ": " + generatePossiblePositions(board,currentDepth,moreInfo).length + "(in "+(-start+Date.now())+"ms)");
         currentDepth++;
     }
 }
