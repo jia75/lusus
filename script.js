@@ -16,12 +16,13 @@ const invertedBoardToStandard = [56,57,58,59,60,61,62,63,
                                   0, 1, 2, 3, 4, 5, 6, 7];
 const pieceNames = ["Empty","whiteKing","whiteQueen","whiteRook","whiteBishop","whiteKnight","whitePawn",
 "blackKing","blackQueen","blackRook","blackBishop","blackKnight","blackPawn","Border"];
-const castlingAvailabilityStringToCode = ["-","K","Q","KQ","k","Kk","Qk","KQk","q","Kq","Qq","KQq","kq","Kkq","Qkq","KQkq"]
+const castlingAvailabilityStringToCode = ["-","K","Q","KQ","k","Kk","Qk","KQk","q","Kq","Qq","KQq","kq","Kkq","Qkq","KQkq"];
 const pieceSymbolToCode = ["K","Q","R","B","N","P","k","q","r","b","n","p"];
 const colorToCode = ["w","b"];
 const possibleEmptySquareNumbers = ["/","1","2","3","4","5","6","7","8"];
 const fileNames = ["a","b","c","d","e","f","g","h"];
 const directions = [10,11,1,-9,-10,-11,-1,9];
+const codeToAlgebraicSymbol = ["","K","Q","R","B","N"];
  
 function pieceToColor(pieceCode) {
     if (0 < pieceCode && pieceCode < 7) {return 0;}
@@ -41,6 +42,37 @@ function bufferedIndexToCoordinates(index) {
 function coordinatesToStandardIndex(index) {
     indexCharacters = index.split("");
     return fileNames.indexOf(indexCharacters[0]) + ((+indexCharacters[1])-1)*8;
+}
+
+function moveToAlgebraic(move, legalMoves, board, isCheck, isCheckMate) {
+    legalMoves.splice(legalMoves.indexOf(move), 1);
+    let noPromotionMoves = removePromotionNotationFromMovelist(legalMoves, board);
+    let moveParts = [Math.floor(move/100), move%100, promotionNotationToMove(move, board)%100];
+    let returnString = "";
+    returnString += codeToAlgebraicSymbol[board[moveParts[0]]%6];
+    if ((board[moveParts[0]]%6 == 0 && board[moveParts[2]] != 0) || (noPromotionMoves.find(move => boardIndexToRank(move%100) == boardIndexToRank(moveParts[2]) && move%100 == moveParts[2] && board[Math.floor(move/100)] == board[moveParts[0]] && Math.floor(move/100)!=moveParts[0]) ?? 0 )!= 0) {
+        returnString += fileNames[boardIndexToFile(moveParts[0])];
+    }
+    if (noPromotionMoves.find(move => boardIndexToFile(move%100) == boardIndexToFile(moveParts[2]) && move%100 == moveParts[2] && board[Math.floor(move/100)] == board[moveParts[0]] && Math.floor(move/100)!=moveParts[0]) ?? 0 != 0) {
+        returnString += boardIndexToRank(moveParts[0])+1;
+    }
+    if (board[moveParts[2]] != 0) {
+        returnString += 'x';
+    }
+    returnString += bufferedIndexToCoordinates(moveParts[2]);
+    if (moveParts[2] != moveParts[1]) {
+        returnString += "=";
+        returnString += codeToAlgebraicSymbol[moveParts[1]%10];
+    }
+    if (isCheck || isCheckMate) {
+        if (isCheckMate) {
+            returnString += "#";
+        } else {
+            returnString += "+";
+        }
+    }
+    
+    return returnString;
 }
 
 function getBoardDisplayString(board) {
