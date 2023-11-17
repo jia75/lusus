@@ -244,19 +244,19 @@ function generateMoves(board) {
 
     //Castling
     let castlingAvailability = castlingCodeToArray(board[121]);
-    let intermediateSquareIsOk  = (board[friendlyKingSquare+colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier));
-    let destinationSquareIsOk = (board[friendlyKingSquare+colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier*2));
+    let intermediateSquareIsOk  = (board[friendlyKingSquare+1] == 0 && !attackedSquares.includes(friendlyKingSquare+1));
+    let destinationSquareIsOk = (board[friendlyKingSquare+2] == 0 && !attackedSquares.includes(friendlyKingSquare+2));
     //Kingside
     if (castlingAvailability[colorToPlay*2] == 1
     && intermediateSquareIsOk && destinationSquareIsOk && checkingMoves.length == 0) {
-        moveList.push(friendlyKingSquare*100+friendlyKingSquare+colorMultiplier*2);
+        moveList.push(friendlyKingSquare*100+friendlyKingSquare+2);
     }
     //QueenSide
-    intermediateSquareIsOk = (board[friendlyKingSquare-colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare-colorMultiplier) && board[friendlyKingSquare-colorMultiplier*3] == 0);
-    destinationSquareIsOk = (board[friendlyKingSquare-colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare-colorMultiplier*2));
+    intermediateSquareIsOk = (board[friendlyKingSquare-1] == 0 && !attackedSquares.includes(friendlyKingSquare-1) && board[friendlyKingSquare-3] == 0);
+    destinationSquareIsOk = (board[friendlyKingSquare-2] == 0 && !attackedSquares.includes(friendlyKingSquare-2));
     if (castlingAvailability[colorToPlay*2 + 1] == 1
         && intermediateSquareIsOk && destinationSquareIsOk && checkingMoves.length == 0) {
-            moveList.push(friendlyKingSquare*100+friendlyKingSquare-colorMultiplier*2);
+            moveList.push(friendlyKingSquare*100+friendlyKingSquare-2);
         }
 
     for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
@@ -264,7 +264,7 @@ function generateMoves(board) {
             if (Math.floor(moveList[filteringIndex]/100) != squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex]) {
                 continue;
             } 
-            let squareDifference = (Math.abs(Math.floor(moveList[filteringIndex]/100) - promotionNotationToMove(moveList[filteringIndex],board)%100))
+            let squareDifference = (Math.abs(Math.floor(moveList[filteringIndex]/100) - promotionNotationToMove(moveList[filteringIndex],board)%100));
             if (squareDifference%(directions[pinnedPieceSearchDirectionIndex]) == 0) {
                 if (Math.abs(directions[pinnedPieceSearchDirectionIndex]) == 1 && boardIndexToRank(Math.floor(moveList[filteringIndex]/100)) != boardIndexToRank(moveList[filteringIndex]%100)) {
                     moveList.splice(filteringIndex,1);
@@ -543,12 +543,12 @@ function makeMove(move,board,legalMoves) {
     //castling
     if (board[moveParts[0]]%6 == 1) {
         //kingside
-        if (moveParts[1]-moveParts[0] == 2*colorMultiplier) {
-            [board[+moveParts[0]+colorMultiplier], board[+moveParts[1]+colorMultiplier]] = [board[+moveParts[1]+colorMultiplier], 0];
+        if (moveParts[1]-moveParts[0] == 2) {
+            [board[+moveParts[0]+1], board[+moveParts[1]+1]] = [board[+moveParts[1]+1], 0];
         }
         //queenside
-        if (moveParts[0]-moveParts[1] == 2*colorMultiplier) {
-            [board[+moveParts[0]-colorMultiplier], board[+moveParts[1]-2*colorMultiplier]] = [board[+moveParts[1]-2*colorMultiplier, 0]];
+        if (moveParts[1]-moveParts[0] == -2) {
+            [board[+moveParts[0]-1], board[+moveParts[1]-2]] = [board[+moveParts[1]-2], 0];
         }
 
     }
@@ -653,4 +653,4 @@ function perft(board, maxLayer, moreInfo= false) {
 
 var clickedSquare = 0;
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-mainBoard = interpretFEN('r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1');
+mainBoard = interpretFEN('8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -');
