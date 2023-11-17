@@ -72,6 +72,27 @@ function initializeBoard() {
     boardArray.push(0,0,0,0,0);
     return boardArray;
 }
+function promotionNotationToMove(move, board) {
+    move = +move;
+    let moveParts = Array(2);
+    moveParts[0] = Math.floor(move/100);
+    moveParts[1] = move%100;
+    let colorMultiplier = board[120] * -2 + 1;
+    if (boardIndexToRank(moveParts[0]) == [6,1][board[120]] && board[moveParts[0]] == [6,12][board[120]]) {
+        moveParts[1] = moveParts[0] + colorMultiplier*([9,10,11][Math.floor(moveParts[1]/10)]);
+    }
+    return moveParts[0]*100+moveParts[1];
+}
+function removePromotionNotationFromMovelist(moveList, board) {
+    let returnArray = [];
+    for(move of moveList) {
+        returnArray.push(promotionNotationToMove(move, board));
+    }
+    return returnArray;
+}
+function castlingCodeToArray(code) {
+    return [code%2, Math.floor(code/2)%2, Math.floor(code/4)%2, Math.floor(code/8)];
+}
 
 function interpretFEN(FENString) {
     let FENStringParts = FENString.split(" ");
@@ -99,7 +120,7 @@ function interpretFEN(FENString) {
     return boardToReturn;
 }
 
-function generateMoves(board, makeCheckCheck = true) {
+function generateMoves(board) {
     let moveList = [];
     let colorToPlay = board[120];
     let colorMultiplier = board[120] * -2 + 1;
@@ -129,46 +150,45 @@ function generateMoves(board, makeCheckCheck = true) {
         occupiedSquares.push(squareCategorizationIndex);
     }
 
-    if (makeCheckCheck) {
-        board[120] = (board[120]+1)%2;
-        let rawNextMoves = generateMoves(board, false);
-        board[120] = (board[120]+1)%2;
-        for (let attackedSquareIndex = 0; attackedSquareIndex < rawNextMoves.length; attackedSquareIndex++) {
-            attackedSquares.push(rawNextMoves[attackedSquareIndex]%100);
-            if (rawNextMoves[attackedSquareIndex]%100 == friendlyKingSquare) {
-                //King is under attack
-                checkingMoves.push(rawNextMoves[attackedSquareIndex]);
-            }
+    board[120] = (board[120]+1)%2;
+    let rawNextMoves = generateAttackedMap(board);
+    board[120] = (board[120]+1)%2;
+    for (let attackedSquareIndex = 0; attackedSquareIndex < rawNextMoves.length; attackedSquareIndex++) {
+        attackedSquares.push(rawNextMoves[attackedSquareIndex]%100);
+        if (rawNextMoves[attackedSquareIndex]%100 == friendlyKingSquare) {
+            //King is under attack
+            checkingMoves.push(rawNextMoves[attackedSquareIndex]);
         }
-        
-        //Pinned piece locator
-        for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
-            for (let moveIndexer = friendlyKingSquare + directions[pinnedPieceSearchDirectionIndex];
-                board[moveIndexer] != 13; moveIndexer += directions[pinnedPieceSearchDirectionIndex]) {
-                if (friendlySquares.includes(moveIndexer)){
-                    let pieceToBePinned = moveIndexer;
+    }
+    
+    //Pinned piece locator
+    for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
+        for (let moveIndexer = friendlyKingSquare + directions[pinnedPieceSearchDirectionIndex];
+            board[moveIndexer] != 13; moveIndexer += directions[pinnedPieceSearchDirectionIndex]) {
+            if (friendlySquares.includes(moveIndexer)){
+                let pieceToBePinned = moveIndexer;
+                moveIndexer += directions[pinnedPieceSearchDirectionIndex];
+                while (board[moveIndexer] != 13 && !friendlySquares.includes(moveIndexer)) {
+                    // [2,3,8,9] if vertical check
+                    if ([2,3 + pinnedPieceSearchDirectionIndex%2,8,9 + pinnedPieceSearchDirectionIndex%2].includes(board[moveIndexer])) {
+                        squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex] = pieceToBePinned;
+                        break;
+                    }
+                    if (enemySquares.includes(moveIndexer)) {
+                        break;
+                    }
                     moveIndexer += directions[pinnedPieceSearchDirectionIndex];
-                    while (board[moveIndexer] != 13 && !friendlySquares.includes(moveIndexer)) {
-                        // [2,3,8,9] if vertical check
-                        if ([2,3 + pinnedPieceSearchDirectionIndex%2,8,9 + pinnedPieceSearchDirectionIndex%2].includes(board[moveIndexer])) {
-                            squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex] = pieceToBePinned;
-                            break;
-                        }
-                        if (enemySquares.includes(moveIndexer)) {
-                            break;
-                        }
-                        moveIndexer += directions[pinnedPieceSearchDirectionIndex];
-                    } 
-                    break;
-                }
+                } 
+                break;
+            }
+            if (enemySquares.includes(moveIndexer)) {
+                break;
             }
         }
     }
+
     let squaresToStartFrom = structuredClone(friendlySquares);
-    if (!makeCheckCheck) {
-        enemySquares = enemySquares.concat(friendlySquares);
-        friendlySquares = [];
-    }
+
     //Rook
     for (let rookMoveGenerationIndexInFriendlySquares = 0; rookMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; rookMoveGenerationIndexInFriendlySquares++) {
         if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] != 3 + colorToPlay*6 
@@ -214,7 +234,7 @@ function generateMoves(board, makeCheckCheck = true) {
         if (board[squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares]] != 6 + colorToPlay*6 ) {
             continue;
         }
-        moveList = moveList.concat(findPawnMoves(squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares], board, enemySquares, emptySquares, makeCheckCheck));
+        moveList = moveList.concat(findPawnMoves(squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares], board, enemySquares, emptySquares));
         squaresToStartFrom.splice(pawnMoveGenerationIndexInFriendlySquares,1);
         pawnMoveGenerationIndexInFriendlySquares--;
     }
@@ -223,31 +243,36 @@ function generateMoves(board, makeCheckCheck = true) {
     moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, directions,attackedSquares));
 
     //Castling
-    let castlingAvailability = [board[121]%2, Math.floor(board[121]/2)%2, Math.floor(board[121]/4)%2, Math.floor(board[121]/8)];
+    let castlingAvailability = castlingCodeToArray(board[121]);
     let intermediateSquareIsOk  = (board[friendlyKingSquare+colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier));
     let destinationSquareIsOk = (board[friendlyKingSquare+colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare+colorMultiplier*2));
     //Kingside
     if (castlingAvailability[colorToPlay*2] == 1
-    && intermediateSquareIsOk && destinationSquareIsOk) {
+    && intermediateSquareIsOk && destinationSquareIsOk && checkingMoves.length == 0) {
         moveList.push(friendlyKingSquare*100+friendlyKingSquare+colorMultiplier*2);
     }
     //QueenSide
     intermediateSquareIsOk = (board[friendlyKingSquare-colorMultiplier] == 0 && !attackedSquares.includes(friendlyKingSquare-colorMultiplier) && board[friendlyKingSquare-colorMultiplier*3] == 0);
     destinationSquareIsOk = (board[friendlyKingSquare-colorMultiplier*2] == 0 && !attackedSquares.includes(friendlyKingSquare-colorMultiplier*2));
     if (castlingAvailability[colorToPlay*2 + 1] == 1
-        && intermediateSquareIsOk && destinationSquareIsOk) {
+        && intermediateSquareIsOk && destinationSquareIsOk && checkingMoves.length == 0) {
             moveList.push(friendlyKingSquare*100+friendlyKingSquare-colorMultiplier*2);
         }
 
     for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
-        for (let filteringIndex = 1; filteringIndex-1 < moveList.length; filteringIndex++) {
-            if (Math.floor(moveList[filteringIndex-1]/100) != squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex]) {
+        for (let filteringIndex = 0; filteringIndex < moveList.length; filteringIndex++) {
+            if (Math.floor(moveList[filteringIndex]/100) != squaresOfPinnedPieces[pinnedPieceSearchDirectionIndex]) {
                 continue;
             } 
-            if ((Math.abs(Math.floor(moveList[filteringIndex-1]/100) - moveList[filteringIndex-1]%100))%(directions[pinnedPieceSearchDirectionIndex]) == 0) {
+            let squareDifference = (Math.abs(Math.floor(moveList[filteringIndex]/100) - promotionNotationToMove(moveList[filteringIndex],board)%100))
+            if (squareDifference%(directions[pinnedPieceSearchDirectionIndex]) == 0) {
+                if (Math.abs(directions[pinnedPieceSearchDirectionIndex]) == 1 && boardIndexToRank(Math.floor(moveList[filteringIndex]/100)) != boardIndexToRank(moveList[filteringIndex]%100)) {
+                    moveList.splice(filteringIndex,1);
+                    filteringIndex--;
+                }
                 continue;
             }
-            moveList.splice(filteringIndex-1,1);
+            moveList.splice(filteringIndex,1);
             filteringIndex--;
         }
     }
@@ -308,6 +333,95 @@ function exploreSlidingDirection(startSquare, board, friendlySquares, enemySquar
     }
     return slideMoves;
 }
+
+function generateAttackedMap(board) {
+    let moveList = [];
+    let colorToPlay = board[120];
+    let emptySquares = Array();
+    let occupiedSquares = Array();
+    let friendlySquares = Array();
+    let enemySquares = Array();
+    let friendlyKingSquare = board.indexOf(6*colorToPlay+1);
+
+    for (let squareCategorizationIndex = 21; squareCategorizationIndex < 99; squareCategorizationIndex++) {
+        if (!standardBoardToBuffered.includes(squareCategorizationIndex)) {
+            continue;
+        }
+        if (board[squareCategorizationIndex] == 0) {
+            emptySquares.push(squareCategorizationIndex);
+            continue;
+        }
+        if (pieceToColor(board[squareCategorizationIndex]) === colorToPlay) {
+            friendlySquares.push(squareCategorizationIndex);
+            occupiedSquares.push(squareCategorizationIndex);
+            continue;
+        }
+        enemySquares.push(squareCategorizationIndex);
+        occupiedSquares.push(squareCategorizationIndex);
+    }
+
+    let squaresToStartFrom = structuredClone(friendlySquares);
+    enemySquares.splice(enemySquares.indexOf(board.indexOf(6*((colorToPlay+1)%2)+1)),1);
+    enemySquares = enemySquares.concat(friendlySquares);
+    friendlySquares = [];
+    //Rook
+    for (let rookMoveGenerationIndexInFriendlySquares = 0; rookMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; rookMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] != 3 + colorToPlay*6 
+            && board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] != 2 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,10));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,1));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-10));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-1));
+        if (board[squaresToStartFrom[rookMoveGenerationIndexInFriendlySquares]] == 3 + colorToPlay*6) {
+            squaresToStartFrom.splice(rookMoveGenerationIndexInFriendlySquares,1);
+            rookMoveGenerationIndexInFriendlySquares--;
+        }
+    }
+
+    //Bishop
+    for (let bishopMoveGenerationIndexInFriendlySquares = 0; bishopMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; bishopMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares]] != 4 + colorToPlay*6 
+            && board[squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares]] != 2 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,11));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-9));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,-11));
+        moveList = moveList.concat(exploreSlidingDirection(squaresToStartFrom[bishopMoveGenerationIndexInFriendlySquares],board,friendlySquares,enemySquares,9));
+        squaresToStartFrom.splice(bishopMoveGenerationIndexInFriendlySquares,1);
+        bishopMoveGenerationIndexInFriendlySquares--;
+    }
+
+    //Knight
+    for (let knightMoveGenerationIndexInFriendlySquares = 0; knightMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; knightMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares]] != 5 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(findMappedMoves(squaresToStartFrom[knightMoveGenerationIndexInFriendlySquares], friendlySquares, [21,19,12,-12,-19,-21,-8,8],[]));
+        squaresToStartFrom.splice(knightMoveGenerationIndexInFriendlySquares,1);
+        knightMoveGenerationIndexInFriendlySquares--;
+    }
+
+    //Pawn
+    for (let pawnMoveGenerationIndexInFriendlySquares = 0; pawnMoveGenerationIndexInFriendlySquares < squaresToStartFrom.length; pawnMoveGenerationIndexInFriendlySquares++) {
+        if (board[squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares]] != 6 + colorToPlay*6 ) {
+            continue;
+        }
+        moveList = moveList.concat(findPawnAttackMap(board, squaresToStartFrom[pawnMoveGenerationIndexInFriendlySquares]));
+        squaresToStartFrom.splice(pawnMoveGenerationIndexInFriendlySquares,1);
+        pawnMoveGenerationIndexInFriendlySquares--;
+    }
+
+    //King
+    moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], [], directions, []));
+
+
+
+    return moveList;
+}
+
 function findMappedMoves(startSquare, friendlySquares, destinationDifferences,attackedSquares) {
     let mappedDestinations = destinationDifferences;
     let mappedMoves = [];
@@ -321,7 +435,7 @@ function findMappedMoves(startSquare, friendlySquares, destinationDifferences,at
     }
     return mappedMoves;
 }
-function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheckCheck) {
+function findPawnMoves(startSquare, board, enemySquares, emptySquares) {
     let pawnMoves = [];
     //0 -> 1
     //1 -> -1
@@ -352,16 +466,6 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheck
         }
         return pawnMoves;
     }
-    if (!makeCheckCheck) {
-        if (standardBoardToBuffered.includes(startSquare + 9*colorMultiplier)) {
-            pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
-        }
-        if (standardBoardToBuffered.includes(startSquare + 11*colorMultiplier)) {
-            pawnMoves.push(startSquare*100+startSquare + 11*colorMultiplier);
-        }
-        enemySquares.pop();
-        return pawnMoves;
-    }
 
     if (enemySquares.includes(startSquare + 9*colorMultiplier)) {
         pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
@@ -380,6 +484,18 @@ function findPawnMoves(startSquare, board, enemySquares, emptySquares, makeCheck
     }
     if (emptySquares.includes(startSquare + 20*colorMultiplier) && boardIndexToRank(startSquare) == board[120]*5+1) {
         pawnMoves.push(startSquare*100+startSquare + 20*colorMultiplier);
+    }
+    return pawnMoves;
+}
+
+function findPawnAttackMap(board, startSquare) {
+    let pawnMoves = [];
+    let colorMultiplier = board[120] * -2 + 1;
+    if (standardBoardToBuffered.includes(startSquare + 9*colorMultiplier)) {
+        pawnMoves.push(startSquare*100+startSquare + 9*colorMultiplier);
+    }
+    if (standardBoardToBuffered.includes(startSquare + 11*colorMultiplier)) {
+        pawnMoves.push(startSquare*100+startSquare + 11*colorMultiplier);
     }
     return pawnMoves;
 }
@@ -403,6 +519,7 @@ function makeMove(move,board,legalMoves) {
     let capturedPiece = 0;
     let previousEnPassantSquare = board[122];
     let colorMultiplier = board[120] * -2 + 1;
+    let castlingAvailability = castlingCodeToArray(board[121]);
     moveParts = move.toString().match(/\d{2}/g);
     //en passant case
     if (+moveParts[1] == board[122] && board[moveParts[0]] % 6 == 0) {
@@ -417,7 +534,7 @@ function makeMove(move,board,legalMoves) {
     //promotion
     if (boardIndexToRank(moveParts[0]) == [6,1][board[120]] && board[moveParts[0]]%6 == 0) {
         board[moveParts[0]] = moveParts[1]%10 + board[120]*6;
-        moveParts[1] = +moveParts[0] + colorMultiplier*[9,10,11][moveParts[1]-moveParts[1]%10];
+        moveParts[1] = +moveParts[0] + colorMultiplier*[9,10,11][Math.floor(moveParts[1]/10)];
     }
     //capturing
     if (board[moveParts[1]] != 0) {
@@ -435,9 +552,22 @@ function makeMove(move,board,legalMoves) {
         }
 
     }
+    //remove castling rights after king move
+    if (board[moveParts[0]]%6 == 1) {
+        castlingAvailability[board[120]*2] = 0;
+        castlingAvailability[board[120]*2+1] = 0;
+    }
+    //remove right on roo kcaputer
+    if ([28,21,98,91].includes(+moveParts[1])) {
+        castlingAvailability[[28,21,98,91].indexOf(+moveParts[1])] = 0;
+    }
+    //remove right on rook move
+    if ([28,21,98,91].includes(+moveParts[0])) {
+        castlingAvailability[[28,21,98,91].indexOf(+moveParts[0])] = 0;
+    }
     [board[moveParts[1]], board[moveParts[0]]] = [board[moveParts[0]], 0];
+    board[121] = castlingAvailability[0]+castlingAvailability[1]*2+castlingAvailability[2]*4+castlingAvailability[3]*8
     board[120] = (board[120]+1)%2;
-
     return [true,capturedPiece, previousEnPassantSquare];
 }
 
@@ -452,7 +582,7 @@ function unmakeMove(move, board, capturedPiece, previousEnPassantSquare) {
     board[120] = (board[120]+1)%2;
 }
 
-function squareClickEvent(square, board) {
+function squareClickEvent(square, board, promotionValue) {
     let bufferedSquare = standardBoardToBuffered[invertedBoardToStandard[square]];
     if (clickedSquare == 0) {
         clickedSquare = bufferedSquare;
@@ -468,11 +598,11 @@ function squareClickEvent(square, board) {
         if (![9,10,11,-9,-10,-11].includes(bufferedSquare-clickedSquare)) {
             return;
         }
-        bufferedSquare = 2+([9,10,11,-9,-10,-11].indexOf(bufferedSquare-clickedSquare)%3)*10;
+        bufferedSquare = +promotionValue+([9,10,11,-9,-10,-11].indexOf(bufferedSquare-clickedSquare)%3)*10;
     }
     if (makeMove(clickedSquare*100+bufferedSquare,board,generateMoves(board))[0]) {
         clearInterfaceChessboard();
-        highlightMoveList(generateMoves(board));
+        highlightMoveList(removePromotionNotationFromMovelist(generateMoves(board),board));
         highlightSquare(clickedSquare, "#00000000");
         clickedSquare = 0;
         displayBoard(board);
@@ -506,13 +636,13 @@ function generatePossiblePositions(board, depth, showPerMove=false) {
         newMoves = generatePossiblePositions(temporaryBoard, depth - 1);
         positions = positions.concat(newMoves);
         if (showPerMove) {
-            console.log(bufferedIndexToCoordinates(Math.floor(moveToMake/100))+(bufferedIndexToCoordinates(moveToMake%100)+": " + newMoves.length))
+            console.log(bufferedIndexToCoordinates(Math.floor(moveToMake/100))+(bufferedIndexToCoordinates(promotionNotationToMove(moveToMake,board)%100)+": " + newMoves.length))
         }
     }
     
     return positions;
 }
-function testingFullMoveGeneration(board, maxLayer, moreInfo= false) {
+function perft(board, maxLayer, moreInfo= false) {
     let currentDepth = 0;
     while (currentDepth-1 < maxLayer) {
         let start = Date.now();
@@ -523,4 +653,4 @@ function testingFullMoveGeneration(board, maxLayer, moreInfo= false) {
 
 var clickedSquare = 0;
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-mainBoard = interpretFEN('rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8');
+mainBoard = interpretFEN('r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1');

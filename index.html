@@ -20,7 +20,7 @@
                                     + (rank*8+file) + '" style="left: '
                                     + (file*10.625) + 'vh; top: '
                                     + (rank*10.625) + 'vh;" onclick="squareClickEvent('
-                                    + (rank*8+file) + ', mainBoard);"></div>');
+                                    + (rank*8+file) + ', mainBoard, document.getElementById(\'promotionPiece\').value);"></div>');
                                 }
                             }
                         </script>
@@ -33,6 +33,7 @@
             </div>
             
             <div id="rightContainer">
+                <input type="number" id="promotionPiece" value = '2'>
                 <span class="errorMessage" id="playerMoveFormError"></span>
                 <span id="moveList">Move List: <br></span>
             </div>
