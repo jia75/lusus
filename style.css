@@ -14,8 +14,7 @@ h1 {
     background-color: #f00;
 }
 #gridContainer {
-    display: grid;
-    grid-template-columns: 62vw 28vw;
+    display: flex;
 }
 #gridContainer > div {
     padding: 1vw;
@@ -24,6 +23,7 @@ h1 {
     width: 100%;
     height: 85vh;
     position: relative;
+    flex: 3;
 }
 #chessboardImage {
     image-rendering:pixelated;
@@ -33,6 +33,7 @@ h1 {
 }
 #rightContainer {
     background-color: #b57e4f;
+    flex: 1;
 }
 .chessPieceImage {
     position: absolute;
@@ -58,4 +59,7 @@ button:focus {
 }
 #moveList {
     color: #ffffff;
+}
+#newGameOptions {
+    display: none;
 }

@@ -33,7 +33,29 @@
             </div>
             
             <div id="rightContainer">
-                <input type="number" id="promotionPiece" value = '2'>
+                <input type="number" id="promotionPiece" value = '2'><br>
+                <button onclick="document.getElementById('newGameOptions').style.display = 'block';">New game</button><br>
+                <div id="newGameOptions">
+                    PGN:<input id="PGNInput">
+                    <button onclick="mainBoard = reenactGame(parsePGN(document.getElementById('PGNInput').value));
+                    displayBoard(mainBoard);
+                    document.getElementById('newGameOptions').style.display = 'none';
+                    document.getElementById('PGNInput').value = '';
+                    document.getElementById('FENInput').value = '';">Enter</button>
+                    <br>
+                    FEN:<input id="FENInput">
+                    <button onclick="mainBoard = interpretFEN(document.getElementById('FENInput').value);
+                    displayBoard(mainBoard);
+                    document.getElementById('newGameOptions').style.display = 'none';
+                    document.getElementById('PGNInput').value = '';
+                    document.getElementById('FENInput').value = '';">Enter</button>
+                    <br>
+                    <button onclick="mainBoard = interpretFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+                    displayBoard(mainBoard);
+                    document.getElementById('newGameOptions').style.display = 'none';
+                    document.getElementById('PGNInput').value = '';
+                    document.getElementById('FENInput').value = '';">Default</button><br>
+                </div>
                 <span class="errorMessage" id="playerMoveFormError"></span>
                 <span id="moveList">Move List: <br></span>
             </div>
