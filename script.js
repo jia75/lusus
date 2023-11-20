@@ -14,6 +14,68 @@ const invertedBoardToStandard = [56,57,58,59,60,61,62,63,
                                  16,17,18,19,20,21,22,23,
                                   8, 9,10,11,12,13,14,15,
                                   0, 1, 2, 3, 4, 5, 6, 7];
+
+const positionValue = [[
+     0, 0, 0, 0, 0, 0, 0, 0,
+    10,10,10,10,10,10,10,10,
+     1, 1, 2, 2, 2, 2, 1, 1,
+     1, 2, 2, 3, 3, 2, 2, 1,
+     2, 2, 4, 6, 6, 4, 2, 2,
+     2, 2, 3, 4, 4, 3, 2, 2,
+     4, 4, 3, 2, 2, 3, 4, 4,
+     0, 0, 0, 0, 0, 0, 0, 0
+],
+[
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 2, 0, 0, 0,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    0, 0, 3, 2, 2, 3, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+],
+[
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 2, 0, 0, 0,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    0, 0, 3, 2, 2, 3, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+],
+[
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 2, 0, 0, 0,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    0, 0, 3, 2, 2, 3, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+],
+[
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 2, 0, 0, 0,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    0, 0, 3, 2, 2, 3, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+],
+[
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 2, 0, 0, 0,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 4, 5, 5, 4, 2, 1,
+    1, 2, 3, 2, 2, 3, 2, 1,
+    0, 0, 3, 2, 2, 3, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+]
+]
 const pieceNames = ["Empty","whiteKing","whiteQueen","whiteRook","whiteBishop","whiteKnight","whitePawn",
 "blackKing","blackQueen","blackRook","blackBishop","blackKnight","blackPawn","Border"];
 const castlingAvailabilityStringToCode = ["-","K","Q","KQ","k","Kk","Qk","KQk","q","Kq","Qq","KQq","kq","Kkq","Qkq","KQkq"];
@@ -711,7 +773,7 @@ function clearInterfaceChessboard() {
     for (let colorClearIndex = 0; colorClearIndex < 64; colorClearIndex++) {
         highlightSquare(standardBoardToBuffered[colorClearIndex], "#00000000");
     }
-  }
+}
 function highlightMoveList(moveList) {
     for (let highlightingIndex in moveList) {
         highlightSquare(moveList[highlightingIndex]%100,"#0000ff40");
@@ -753,11 +815,13 @@ function evaluatePosition(board) {
     let colorToPlay = board[120];
     let colorMultiplier = board[120] * -2 + 1;
     const pieceValues = [100,0,900,500,300,280];
-    let totalEvaluaton = 0;
+    let evaluation = {0: 0};
     let relativePieceValue;
     let pieceToCount;
+    let adjustedSquare;
 
-    let pieceCountingEvaluation = 0;
+    //pieceSum
+    evaluation.pieceSum = 0;
     for (let pieceCountingIndex = 20; pieceCountingIndex < 100; pieceCountingIndex++) {
         pieceToCount = board[pieceCountingIndex];
         if (pieceToCount == 0 || pieceToCount == 13) {
@@ -765,11 +829,26 @@ function evaluatePosition(board) {
         }
         relativePieceValue = pieceValues[pieceToCount % 6] * ( pieceToColor(pieceToCount) * -2 + 1 );
 
-        pieceCountingEvaluation += relativePieceValue
+        evaluation.pieceSum += relativePieceValue;
     }
-    totalEvaluaton += pieceCountingEvaluation
+    evaluation[0] += evaluation.pieceSum;
 
-    return totalEvaluaton;
+    //piecePosition
+    evaluation.piecePosition = 0;
+    for (let pieceCountingIndex = 20; pieceCountingIndex < 100; pieceCountingIndex++) {
+        pieceToCount = board[pieceCountingIndex];
+        if (pieceToCount == 0 || pieceToCount == 13) {
+            continue;
+        }
+        adjustedSquare = standardBoardToBuffered.indexOf(pieceCountingIndex);
+        adjustedSquare = invertedBoardToStandard.indexOf(adjustedSquare%8 + (Math.floor(adjustedSquare/8)*-1+7)*8);
+        relativePieceValue = positionValue[pieceToCount % 6][adjustedSquare] * ( pieceToColor(pieceToCount) * -2 + 1 );
+
+        evaluation.piecePosition += relativePieceValue;
+    }
+    evaluation[0] += evaluation.piecePosition;
+
+    return evaluation;
 }
 
 function chooseMove(board, legalMoves) {
@@ -781,18 +860,18 @@ function chooseMove(board, legalMoves) {
     for (moveToEvaluate of legalMoves) {
         let temporaryBoard = structuredClone(board);
         makeMove(moveToEvaluate, temporaryBoard, legalMoves);
-        if ((lastEvaluation = colorMultiplier*evaluatePosition(temporaryBoard)) > bestMoveEvaluation) {
+        if ((lastEvaluation = colorMultiplier*evaluatePosition(temporaryBoard)[0]) > bestMoveEvaluation) {
             bestMove = moveToEvaluate;
             bestMoveEvaluation = lastEvaluation;
+            console.log('switch to '+bestMove, bestMoveEvaluation);
         }
     }
 
+    console.log(bestMoveEvaluation);
     return bestMove;
 }
 
-function newGameButtonClickEvent() {
 
-}
 
 var clickedSquare = 0;
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
