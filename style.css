@@ -57,7 +57,7 @@ button {
 button:focus {
     background-color: #efdada;
 }
-#moveList {
+span {
     color: #ffffff;
 }
 #newGameOptions {
