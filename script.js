@@ -715,7 +715,7 @@ function squareClickEvent(square, board, promotionValue) {
     }
     if (makeMove(clickedSquare*100+bufferedSquare,board,generateMoves(board))[0]) {
         let generatedMoves = generateMoves(board);
-        let chosenMove = chooseMoveWithAlphaBeta(board, 4, generatedMoves, 4);
+        let chosenMove = chooseMoveWithAlphaBeta(board, 3, generatedMoves, 4);
         makeMove(chosenMove.move, board, generatedMoves);
         document.getElementById('evaluation').innerHTML = chosenMove.evaluation.toString();
         clearInterfaceChessboard();
