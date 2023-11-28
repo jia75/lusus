@@ -63,3 +63,9 @@ span {
 #newGameOptions {
     display: none;
 }
+#depthInput {
+    width: 30px;
+}
+#captureDepthInput {
+    width: 30px;
+}

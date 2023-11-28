@@ -715,9 +715,8 @@ function squareClickEvent(square, board, promotionValue) {
     }
     if (makeMove(clickedSquare*100+bufferedSquare,board,generateMoves(board))[0]) {
         let generatedMoves = generateMoves(board);
-        let chosenMove = chooseMoveWithAlphaBeta(board, 4, generatedMoves, 4);
+        let chosenMove = chooseMoveWithAlphaBeta(board, document.getElementById('depthInput').value, generatedMoves, document.getElementById('captureDepthInput').value);
         makeMove(chosenMove.move, board, generatedMoves);
-        document.getElementById('evaluation').innerHTML = chosenMove.evaluation.toString();
         clearInterfaceChessboard();
         highlightSquare(clickedSquare, "#00000000");
         highlightMoveList(removePromotionNotationFromMovelist(generateMoves(board),board));
@@ -761,16 +760,16 @@ function generatePossiblePositions(board, depth, showPerMove=false) {
 }
 function perft(board, maxLayer, moreInfo= false) {
     let currentDepth = 0;
+    let num;
     while (currentDepth-1 < maxLayer) {
         let start = Date.now();
-        console.log(currentDepth + ": " + generatePossiblePositions(board,currentDepth,moreInfo).length + "(in "+(-start+Date.now())+"ms)");
+        console.log(currentDepth + ": " + (num = generatePossiblePositions(board,currentDepth,moreInfo).length) + "(in "+(-start+Date.now())+"ms)");
         currentDepth++;
     }
+    return num;
 }
 
 function evaluatePosition(board) {
-    let colorToPlay = board[120];
-    let colorMultiplier = board[120] * -2 + 1;
     const pieceValues = [100,0,900,500,300,280];
     let evaluation = {0: 0};
     let relativePieceValue;
@@ -779,7 +778,7 @@ function evaluatePosition(board) {
 
     //pieceSum
     evaluation.pieceSum = 0;
-    for (let pieceCountingIndex = 20; pieceCountingIndex < 100; pieceCountingIndex++) {
+    for (let pieceCountingIndex of standardBoardToBuffered) {
         pieceToCount = board[pieceCountingIndex];
         if (pieceToCount == 0 || pieceToCount == 13) {
             continue;
@@ -792,7 +791,7 @@ function evaluatePosition(board) {
 
     //piecePosition
     evaluation.piecePosition = 0;
-    for (let pieceCountingIndex = 20; pieceCountingIndex < 100; pieceCountingIndex++) {
+    for (let pieceCountingIndex of standardBoardToBuffered) {
         pieceToCount = board[pieceCountingIndex];
         if (pieceToCount == 0 || pieceToCount == 13) {
             continue;
@@ -813,8 +812,14 @@ function evaluatePosition(board) {
 
 function alphaBeta(board, depth, alpha, beta, legalMoves, captureChecksLeft) {
     if (depth == 0) {
-        if (captureChecksLeft!=0 && (capturingMoves = legalMoves.filter(move => board[move%100] != 0)).length != 0) {
-            return alphaBeta(board, 1, alpha, beta, capturingMoves, captureChecksLeft-1);
+        if ((captureChecksLeft > 0) && ((capturingMoves = legalMoves.filter(move => board[move%100] != 0)).length > 0)) {
+            let colorMultiplier = board[120] * -2 + 1;
+            let alphaBetaResult = alphaBeta(board, 1, alpha, beta, capturingMoves, captureChecksLeft-1);
+            let evaluationResult = evaluatePosition(board)[0];
+            if (evaluationResult*colorMultiplier > alphaBetaResult*colorMultiplier) {
+                return evaluationResult;
+            }
+            return alphaBetaResult;
         }
         return evaluatePosition(board)[0];
     }
@@ -879,58 +884,18 @@ function chooseMoveWithAlphaBeta(board, depth, legalMoves, maxCaptureChecks) {
                 bestMove = move;
             }
         }
+
         return {evaluation: value, move: bestMove};
     }
 }
-function chooseMoveRecursively(board, depth, legalMoves) {
-    if (depth == 0) {
-        let chosenMove = chooseMove(board, legalMoves);
-        if ((board[chosenMove[0]%100]??0 != 0) && chosenMove[0] != 0) {
-            //console.log(chosenMove, board[chosenMove[0]%100]);
-            let temporaryBoard = structuredClone(board);
-            makeMove(chosenMove[0], temporaryBoard, legalMoves);
-            let lastGeneratedMoves = generateMoves(temporaryBoard);
-            return chooseMoveRecursively(temporaryBoard, 0, lastGeneratedMoves);
-        }
-        return [chosenMove[0], chosenMove[1], [chosenMove[0]]];
-    }
-    let bestMoveEvaluation = undefined;
-    let bestMove = 0;
-    let lastEvaluation;
-    let colorMultiplier = -1*(board[120] * -2 + 1);
-    let previousBestMove;
-    let temporaryBoardLegalMoves;
-    let bestMovePath;
-
-    for (let moveToEvaluate of legalMoves) {
-        temporaryBoard = structuredClone(board);
-        makeMove(moveToEvaluate, temporaryBoard, legalMoves);
-
-        temporaryBoardLegalMoves = generateMoves(temporaryBoard);
-
-        bestMoveOnTemporaryBoard = chooseMoveRecursively(temporaryBoard, depth - 1, temporaryBoardLegalMoves);
-
-
-
-        if ((lastEvaluation = colorMultiplier*bestMoveOnTemporaryBoard[1]) > bestMoveEvaluation || bestMoveEvaluation == undefined) {
-            bestMove = moveToEvaluate;
-            bestMoveEvaluation = lastEvaluation;
-            bestMovePath = previousBestMove[2];
-        }
-        if (depth == 3) {
-            console.log(Math.round(legalMoves.indexOf(moveToEvaluate) / legalMoves.length * 100) + '%');
-            console.log(lastEvaluation, moveToEvaluate, bestMovePath);
-        }
-    }
-    try {
-    bestMovePath.unshift(bestMove);
-    } catch(error) {
-        console.log(bestMoveEvaluation);
-    }
-    return [bestMove, colorMultiplier*bestMoveEvaluation, bestMovePath];
+function test() {
+    let board = interpretFEN('r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -');
+    console.log('MoveGen: '+(perft(board, 3) == 97862));
 }
 
 
 var clickedSquare = 0;
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 //mainBoard = interpretFEN('8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -');
+
+

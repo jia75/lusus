@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>lusus - Chess engine & analysis</title>
         <link rel="stylesheet" href="style.css">
         <script src="script.js"></script>
     </head>
@@ -58,6 +59,9 @@
                     document.getElementById('FENInput').value = '';">Default</button><br>
                 </div>
                 <span class="errorMessage" id="playerMoveFormError"></span>
+                Depth: <input type="number"  id="depthInput" value="3">Capture Depth: <input type="number" id="captureDepthInput" value="4">
+                <button onclick="let generatedMoves; makeMove(chooseMoveWithAlphaBeta(mainBoard, document.getElementById('depthInput').value, generatedMoves = generateMoves(mainBoard), document.getElementById('captureDepthInput').value).move, mainBoard, generatedMoves);displayBoard(mainBoard);">play</button>
+                <br>
                 <span id="moveList">Move List: <br></span>
             </div>
             
