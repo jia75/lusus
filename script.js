@@ -771,23 +771,27 @@ function perft(board, maxLayer, moreInfo= false) {
 
 function evaluatePosition(board) {
     const pieceValues = [100,0,900,500,300,280];
-    let evaluation = {0: 0};
+    let evaluation = {sum: 0};
     let relativePieceValue;
     let pieceToCount;
     let adjustedSquare;
+    let amountOfPieces = 64;
+    let whiteKingSquare = board.indexOf(1);
+    let blackKingSquare = board.indexOf(7);    
 
     //pieceSum
     evaluation.pieceSum = 0;
     for (let pieceCountingIndex of standardBoardToBuffered) {
         pieceToCount = board[pieceCountingIndex];
         if (pieceToCount == 0 || pieceToCount == 13) {
+            amountOfPieces--;
             continue;
         }
         relativePieceValue = pieceValues[pieceToCount % 6] * ( pieceToColor(pieceToCount) * -2 + 1 );
 
         evaluation.pieceSum += relativePieceValue;
     }
-    evaluation[0] += evaluation.pieceSum;
+    evaluation.sum += evaluation.pieceSum;
 
     //piecePosition
     evaluation.piecePosition = 0;
@@ -805,7 +809,18 @@ function evaluatePosition(board) {
 
         evaluation.piecePosition += relativePieceValue;
     }
-    evaluation[0] += evaluation.piecePosition;
+    evaluation.sum += evaluation.piecePosition;
+
+    //endgameKing
+    /*
+    evaluation.endgameKing = 0;
+    let endGameCoefficient = 9/(64-amountOfPieces);
+    const kingDistanceCoefficient = evaluation.pieceSum;
+    evaluation.endgameKing += 5/(Math.abs(blackKingSquare-whiteKingSquare)+Math.abs(whiteKingSquare%10-blackKingSquare%10));
+    console.log(evaluation);
+    evaluation.endgameKing *= endGameCoefficient*kingDistanceCoefficient;
+    evaluation.sum += evaluation.endgameKing;
+    */
 
     return evaluation;
 }
@@ -815,13 +830,13 @@ function alphaBeta(board, depth, alpha, beta, legalMoves, captureChecksLeft) {
         if ((captureChecksLeft > 0) && ((capturingMoves = legalMoves.filter(move => board[move%100] != 0)).length > 0)) {
             let colorMultiplier = board[120] * -2 + 1;
             let alphaBetaResult = alphaBeta(board, 1, alpha, beta, capturingMoves, captureChecksLeft-1);
-            let evaluationResult = evaluatePosition(board)[0];
+            let evaluationResult = evaluatePosition(board).sum;
             if (evaluationResult*colorMultiplier > alphaBetaResult*colorMultiplier) {
                 return evaluationResult;
             }
             return alphaBetaResult;
         }
-        return evaluatePosition(board)[0];
+        return evaluatePosition(board).sum;
     }
 
     if (board[120] == 0) {
