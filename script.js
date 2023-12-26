@@ -624,8 +624,8 @@ function findInterjections(friendlyKingSquare, checkOriginSquare, board, interje
     }
 }
 
-function makeMove(move,board,legalMoves) {
-    if (!legalMoves.includes(move)) {
+function makeMove(move,board,legalMoves=undefined) {
+    if (!(legalMoves ?? [move]).includes(move)) {
         return [false];
     }
     let capturedPiece = 0;
@@ -902,6 +902,19 @@ function chooseMoveWithAlphaBeta(board, depth, legalMoves, maxCaptureChecks) {
 
         return {evaluation: value, move: bestMove};
     }
+}
+
+function evaluateMove(move,board,depth,captureDepth,bestMoveEval = undefined) {
+    bestMoveEval = bestMoveEval ?? chooseMoveWithAlphaBeta(board, depth, generateMoves(board),captureDepth);
+    let bestEval = bestMoveEval.evaluation;
+    let bestMove = bestMoveEval.move;
+    if (move == bestMove) {
+        return 0;
+    }
+    let temporaryBoard = structuredClone(board);
+    makeMove(move,temporaryBoard);
+    let madeMoveEval=alphaBeta(temporaryBoard, depth-1, -Infinity, Infinity, generateMoves(temporaryBoard), captureDepth);
+    return (board[120]*-2+1)*(madeMoveEval-bestEval)
 }
 function test() {
     let board = interpretFEN('r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -');
