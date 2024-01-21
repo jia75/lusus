@@ -14,7 +14,6 @@ const invertedBoardToStandard = [56,57,58,59,60,61,62,63,
                                  16,17,18,19,20,21,22,23,
                                   8, 9,10,11,12,13,14,15,
                                   0, 1, 2, 3, 4, 5, 6, 7];
-
 const positionValue = [[
      0, 0, 0, 0, 0, 0, 0, 0,
     10,10,10,10,10,10,10,10,
@@ -24,57 +23,57 @@ const positionValue = [[
      2, 2, 3, 4, 4, 3, 2, 2,
      4, 4, 3, 2, 2, 3, 4, 4,
      0, 0, 0, 0, 0, 0, 0, 0
-],
-[
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 2, 2, 0, 0, 0,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    0, 0, 3, 2, 2, 3, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0
-],
-[
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 2, 2, 0, 0, 0,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    0, 0, 3, 2, 2, 3, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0
-],
-[
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 2, 2, 0, 0, 0,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    0, 0, 3, 2, 2, 3, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0
-],
-[
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 2, 2, 0, 0, 0,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    0, 0, 3, 2, 2, 3, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0
-],
-[
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 2, 2, 0, 0, 0,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 4, 5, 5, 4, 2, 1,
-    1, 2, 3, 2, 2, 3, 2, 1,
-    0, 0, 3, 2, 2, 3, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0
-]
+    ],
+    [
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 2, 0, 0, 0,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        0, 0, 3, 2, 2, 3, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+    ],
+    [
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 2, 0, 0, 0,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        0, 0, 3, 2, 2, 3, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+    ],
+    [
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 2, 0, 0, 0,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        0, 0, 3, 2, 2, 3, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+    ],
+    [
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 2, 0, 0, 0,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        0, 0, 3, 2, 2, 3, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+    ],
+    [
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 2, 0, 0, 0,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 4, 5, 5, 4, 2, 1,
+        1, 2, 3, 2, 2, 3, 2, 1,
+        0, 0, 3, 2, 2, 3, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+    ]
 ]
 const pieceNames = ["Empty","whiteKing","whiteQueen","whiteRook","whiteBishop","whiteKnight","whitePawn",
 "blackKing","blackQueen","blackRook","blackBishop","blackKnight","blackPawn","Border"];
@@ -85,12 +84,22 @@ const possibleEmptySquareNumbers = ["/","1","2","3","4","5","6","7","8"];
 const fileNames = ["a","b","c","d","e","f","g","h"];
 const directions = [10,11,1,-9,-10,-11,-1,9];
 const codeToAlgebraicSymbol = ["","K","Q","R","B","N"];
- 
-function pieceToColor(pieceCode) {
-    if (0 < pieceCode && pieceCode < 7) {return 0;}
-    if (6 < pieceCode && pieceCode < 13) {return 1;}
-}
 
+// definitions
+const white = 0;
+const black = 1;
+
+const switchColorMap = [black, white];
+const colorMultiplierMap = [1, -1];
+const pieceToColorMap = [undefined, 
+    white, white, white, white, white, white, 
+    black, black, black, black, black, black]
+
+function addToPageConsole() {
+    for (let string of arguments){
+        document.getElementById('console-output').insertAdjacentHTML('afterbegin',string+'<div>');
+    }
+}
 function boardIndexToFile(index) {
     return index%10 - 1;
 }
@@ -107,7 +116,6 @@ function coordinatesToStandardIndex(index) {
 }
 
 function parsePGN(pgn) {
-    let board = initializeBoard();
     const removeCommentRegex = /{[^}]*}/g;
     const metadataRegEx = /\[([^\]"]+)"([^"]+)"\]/g;
     const moveRegEx = /\d+\.+\s*([\da-hNBRKQ=+#xO\-]+)\s+([\da-hNBRKQ=+#xO\-]+)?/g;
@@ -133,6 +141,7 @@ function parsePGN(pgn) {
     }
 
     pgn = pgn.replace(moveRegEx, "");
+    gameToMoves(game);
     return game;
 }
 
@@ -141,21 +150,35 @@ function reenactGame(game) {
     let lastGeneratedMoves;
 
     for (let move of game.moves) {
-        properMove = algebraicToMove(move,board,(lastGeneratedMoves = generateMoves(board)));
+        properMove = move;
         if (properMove == undefined) {
             displayBoard(board);
             console.log(generateMoves(board));
             throw new Error ('Invalid PGN');
         }
-        makeMove(properMove, board, lastGeneratedMoves);
+        addToMoveList(board, properMove, lastGeneratedMoves = generateMoves(board));
+        makeMove(properMove, board);
     }
 
     return board;
 }
 
+function gameToMoves(game) {
+    let board = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    let lastGeneratedMoves;
+
+    for (let moveIndex = 0; moveIndex < game.moves.length; moveIndex++) {
+        game.moves[moveIndex] = algebraicToMove(game.moves[moveIndex],board,(lastGeneratedMoves = generateMoves(board)));
+        makeMove(game.moves[moveIndex], board);
+    }
+
+    return game;
+}
+
 function moveToAlgebraic(move, legalMoves, board, isCheck, isCheckMate) {
-    legalMoves.splice(legalMoves.indexOf(move), 1);
-    let noPromotionMoves = removePromotionNotationFromMovelist(legalMoves, board);
+    let legalMovesExcept = structuredClone(legalMoves);
+    legalMovesExcept.splice(legalMovesExcept.indexOf(move), 1);
+    let noPromotionMoves = removePromotionNotationFromMovelist(legalMovesExcept, board);
     let moveParts = [Math.floor(move/100), move%100, promotionNotationToMove(move, board)%100];
     let returnString = "";
     returnString += codeToAlgebraicSymbol[board[moveParts[0]]%6];
@@ -188,7 +211,7 @@ function algebraicToMove(move, board, legalMoves) {
     if (move == 'O-O' || move == '0-0') {
         return [2527, 9597][board[120]];
     }
-    if (move == 'O-O' || move == '0-0') {
+    if (move == 'O-O-O' || move == '0-0-0') {
         return [2523, 9593][board[120]];
     }
     const moveParts = move.match(/([KQRNB])?([a-h])?([1-8])?x?([a-h][1-8])(=([QRNB]))?([+#])?/);
@@ -278,33 +301,63 @@ function interpretFEN(FENString) {
 
 function generateMoves(board) {
     let moveList = [];
-    let colorToPlay = board[120];
-    let colorMultiplier = board[120] * -2 + 1;
-    let emptySquares = Array();
-    let occupiedSquares = Array();
-    let friendlySquares = Array();
-    let enemySquares = Array();
-    let attackedSquares = [];
-    let friendlyKingSquare = board.indexOf(6*colorToPlay+1);
+    const colorToPlay = board[120];
+    let colorMultiplier = colorMultiplierMap[colorToPlay];
+    let emptySquares = [];
+    let friendlySquares = [];
+    let enemySquares = [];
+    
     let checkingMoves = [];
-    let squaresOfPinnedPieces = Array(8).fill(0);
+    let squaresOfPinnedPieces = [0,0,0,0,0,0,0,0];
+
+    let pawnSquares = [], rookSquares = [], queenSquares = [], bishopSquares = [], knightSquares = [], kingSquares = [];
 
     //Square Categorization let squareCategorizationIndex = 21; squareCategorizationIndex < 99; squareCategorizationIndex++
+    let currentPiece;
     for (let squareCategorizationIndex of standardBoardToBuffered) {
-        if (board[squareCategorizationIndex] == 0) {
+        currentPiece = board[squareCategorizationIndex];
+        if (currentPiece == 0) {
             emptySquares.push(squareCategorizationIndex);
             continue;
         }
-        if (pieceToColor(board[squareCategorizationIndex]) == colorToPlay) {
+        if (pieceToColorMap[currentPiece] == colorToPlay) {
             friendlySquares.push(squareCategorizationIndex);
-            occupiedSquares.push(squareCategorizationIndex);
             continue;
         }
         enemySquares.push(squareCategorizationIndex);
-        occupiedSquares.push(squareCategorizationIndex);
     }
-   
-    board[120] = -(colorToPlay-1);
+    
+    const pieceCodeColorOffset = colorToPlay*6;
+    for (let squareCategorizationIndex of friendlySquares) {
+        if (board[squareCategorizationIndex] == 6+pieceCodeColorOffset) {
+            pawnSquares.push(squareCategorizationIndex);
+            continue;
+        }
+        if (board[squareCategorizationIndex] == 4+pieceCodeColorOffset) {
+            bishopSquares.push(squareCategorizationIndex);
+            continue;
+        }
+        if (board[squareCategorizationIndex] == 3+pieceCodeColorOffset) {
+            rookSquares.push(squareCategorizationIndex);
+            continue;
+        }
+        if (board[squareCategorizationIndex] == 5+pieceCodeColorOffset) {
+            knightSquares.push(squareCategorizationIndex);
+            continue;
+        }
+        if (board[squareCategorizationIndex] == 2+pieceCodeColorOffset) {
+            queenSquares.push(squareCategorizationIndex);
+            continue;
+        }
+        if (board[squareCategorizationIndex] == 1+pieceCodeColorOffset) {
+            kingSquares.push(squareCategorizationIndex);
+            continue;
+        }
+    }
+    let friendlyKingSquare = kingSquares[0];
+
+    let attackedSquares = [];
+    board[120] = switchColorMap[colorToPlay];
     let rawNextMoves = generateAttackedMap(board);
     board[120] = colorToPlay;
     for (let attackedSquare of rawNextMoves) {
@@ -314,7 +367,6 @@ function generateMoves(board) {
             checkingMoves.push(attackedSquare);
         }
     }
-    
     //Pinned piece locator
     for (let pinnedPieceSearchDirectionIndex = 0; pinnedPieceSearchDirectionIndex < 8; pinnedPieceSearchDirectionIndex++) {
         for (let moveIndexer = friendlyKingSquare + directions[pinnedPieceSearchDirectionIndex];
@@ -339,42 +391,45 @@ function generateMoves(board) {
     }
 
     let squaresToStartFrom = structuredClone(friendlySquares);
-
     //Pawn
-    for (let pawnSquare of squaresToStartFrom.filter(square => board[square]%6==0)) {
+    for (let pawnSquare of pawnSquares) {
         moveList = moveList.concat(findPawnMoves(pawnSquare, board, enemySquares, emptySquares));
-        squaresToStartFrom.splice(squaresToStartFrom.indexOf(pawnSquare),1);
     }
     //Rook
-    for (let rookSquare of squaresToStartFrom.filter(square => board[square]%6==3 || board[square]%6==2)) {
+    for (let rookSquare of rookSquares) {
         moveList = moveList.concat(exploreSlidingDirection(rookSquare,board,friendlySquares,enemySquares,10));
         moveList = moveList.concat(exploreSlidingDirection(rookSquare,board,friendlySquares,enemySquares,1));
         moveList = moveList.concat(exploreSlidingDirection(rookSquare,board,friendlySquares,enemySquares,-10));
         moveList = moveList.concat(exploreSlidingDirection(rookSquare,board,friendlySquares,enemySquares,-1));
-        if (board[rookSquare]%6 == 3) {
-            squaresToStartFrom.splice(squaresToStartFrom.indexOf(rookSquare),1);
-        }
     }
 
     //Bishop
-    for (let bishopSquare of squaresToStartFrom.filter(square => board[square]%6==4 || board[square]%6==2)) {
+    for (let bishopSquare of bishopSquares) {
         moveList = moveList.concat(exploreSlidingDirection(bishopSquare,board,friendlySquares,enemySquares,11));
         moveList = moveList.concat(exploreSlidingDirection(bishopSquare,board,friendlySquares,enemySquares,-9));
         moveList = moveList.concat(exploreSlidingDirection(bishopSquare,board,friendlySquares,enemySquares,-11));
         moveList = moveList.concat(exploreSlidingDirection(bishopSquare,board,friendlySquares,enemySquares,9));
-        squaresToStartFrom.splice(squaresToStartFrom.indexOf(bishopSquare),1);
     }
 
     //Knight
-    for (let knightSquare of squaresToStartFrom.filter(square => board[square]%6==5)) {
+    for (let knightSquare of knightSquares) {
         moveList = moveList.concat(findMappedMoves(knightSquare, friendlySquares, [21,19,12,-12,-19,-21,-8,8],[]));
-        squaresToStartFrom.splice(squaresToStartFrom.indexOf(knightSquare),1);
+    }
+    //Queen
+    for (let queenSquare of queenSquares) {
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,10));
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,1));
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,-10));
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,-1));
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,11));
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,-9));
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,-11));
+        moveList = moveList.concat(exploreSlidingDirection(queenSquare,board,friendlySquares,enemySquares,9));
     }
 
     //King
-    moveList = moveList.concat(findMappedMoves(squaresToStartFrom[0], friendlySquares, directions, attackedSquares));
+    moveList = moveList.concat(findMappedMoves(kingSquares[0], friendlySquares, directions, attackedSquares));
 
-    
 
     //Castling
     let castlingAvailability = castlingCodeToArray(board[121]);
@@ -442,7 +497,7 @@ function generateMoves(board) {
                 continue;
             }
             //interjection
-            if (interjectionSquares.includes(moveList[filteringIndex-1]%100)) {
+            if (interjectionSquares.includes(promotionNotationToMove(moveList[filteringIndex-1], board)%100)) {
                 continue;
             }
             moveList.splice(filteringIndex-1,1);
@@ -470,7 +525,6 @@ function generateAttackedMap(board) {
     let moveList = [];
     let colorToPlay = board[120];
     let emptySquares = Array();
-    let occupiedSquares = Array();
     let friendlySquares = Array();
     let enemySquares = Array();
     let friendlyKingSquare = board.indexOf(6*colorToPlay+1);
@@ -480,13 +534,11 @@ function generateAttackedMap(board) {
             emptySquares.push(squareCategorizationIndex);
             continue;
         }
-        if (pieceToColor(board[squareCategorizationIndex]) == colorToPlay) {
+        if (pieceToColorMap[board[squareCategorizationIndex]] == colorToPlay) {
             friendlySquares.push(squareCategorizationIndex);
-            occupiedSquares.push(squareCategorizationIndex);
             continue;
         }
         enemySquares.push(squareCategorizationIndex);
-        occupiedSquares.push(squareCategorizationIndex);
     }
 
     let squaresToStartFrom = structuredClone(friendlySquares);
@@ -624,8 +676,8 @@ function findInterjections(friendlyKingSquare, checkOriginSquare, board, interje
     }
 }
 
-function makeMove(move,board,legalMoves) {
-    if (!legalMoves.includes(move)) {
+function makeMove(move, board, game=undefined, legalMoves=undefined) {
+    if (!(legalMoves ?? [move]).includes(move)) {
         return [false];
     }
     let capturedPiece = 0;
@@ -678,22 +730,21 @@ function makeMove(move,board,legalMoves) {
     board[moveParts[1]] = +board[+moveParts[0]].toString();
     board[moveParts[0]] = 0;
     board[121] = castlingAvailability[0]+castlingAvailability[1]*2+castlingAvailability[2]*4+castlingAvailability[3]*8;
+    if (board[120] == 1) {
+        board[124]++;
+    }
+    if (game != undefined) {
+        try {
+            game.moves.push(move);
+        } catch (error) {
+            console.error('Invalid game object passed to makeMove(): '+game);
+        }
+    }
     board[120] = -(board[120]-1);
     return [true,capturedPiece, previousEnPassantSquare];
 }
 
-function unmakeMove(move, board, capturedPiece, previousEnPassantSquare) {
-    moveParts = move.toString().match(/\d{2}/g); 
-
-    if (+moveParts[1] == previousEnPassantSquare && board[moveParts[1]] % 6 == 0) {
-        board[moveParts[1] - 10 * (board[120] * -2 + 1)] = capturedPiece;
-    }
-    board[122] = previousEnPassantSquare;
-    [board[moveParts[0]], board[moveParts[1]]] = [board[moveParts[1]], capturedPiece];
-    board[120] = (board[120]+1)%2;
-}
-
-function squareClickEvent(square, board, promotionValue) {
+function squareClickEvent(square, board, promotionValue, game) {
     let bufferedSquare = standardBoardToBuffered[invertedBoardToStandard[square]];
     let generatedMoves;
 
@@ -713,15 +764,28 @@ function squareClickEvent(square, board, promotionValue) {
         }
         bufferedSquare = +promotionValue+([9,10,11,-9,-10,-11].indexOf(bufferedSquare-clickedSquare)%3)*10;
     }
-    if (makeMove(clickedSquare*100+bufferedSquare,board,generateMoves(board))[0]) {
-        let generatedMoves = generateMoves(board);
-        let chosenMove = chooseMoveWithAlphaBeta(board, document.getElementById('depthInput').value, generatedMoves, document.getElementById('captureDepthInput').value);
-        makeMove(chosenMove.move, board, generatedMoves);
+    if ((generatedMoves = generateMoves(board)).includes(clickedSquare*100+bufferedSquare)) {
+        addToMoveList(board, clickedSquare*100+bufferedSquare, generatedMoves);
+        
+        makeMove(clickedSquare*100+bufferedSquare,board,game,generatedMoves)
+        generatedMoves = generateMoves(board);
+        displayBoard(board);
         clearInterfaceChessboard();
         highlightSquare(clickedSquare, "#00000000");
-        highlightMoveList(removePromotionNotationFromMovelist(generateMoves(board),board));
+        highlightMoveList(removePromotionNotationFromMovelist(generatedMoves,board));
         clickedSquare = 0;
-        displayBoard(board);
+        if (document.getElementById("enginePlaySetting").checked) {
+            let chosenMove = chooseMoveWithAlphaBeta(board, document.getElementById('depthInput').value, generatedMoves, document.getElementById('captureDepthInput').value);
+            addToMoveList(board, chosenMove.move, generatedMoves);
+            makeMove(chosenMove.move, board, game, generatedMoves);
+            generatedMoves = generateMoves(board);
+            displayBoard(board);
+        }   
+    } else {
+        highlightSquare(clickedSquare, "#00000000");
+        clickedSquare = standardBoardToBuffered[invertedBoardToStandard[square]];
+        bufferedSquare = 0;
+        highlightSquare(clickedSquare, "#ff000040");
     }
 }
 
@@ -748,29 +812,54 @@ function generatePossiblePositions(board, depth, showPerMove=false) {
     let positions = [];
     for (let moveToMake of moves) {
         let temporaryBoard = structuredClone(board);
-        makeMove(moveToMake, temporaryBoard, [moveToMake]);
+        makeMove(moveToMake, temporaryBoard);
         newMoves = generatePossiblePositions(temporaryBoard, depth - 1);
         positions = positions.concat(newMoves);
         if (showPerMove) {
-            console.log(bufferedIndexToCoordinates(Math.floor(moveToMake/100))+(bufferedIndexToCoordinates(promotionNotationToMove(moveToMake,board)%100)+": " + newMoves.length))
+            addToPageConsole(`${bufferedIndexToCoordinates(Math.floor(moveToMake/100))}${bufferedIndexToCoordinates(promotionNotationToMove(moveToMake,board)%100)}: ${newMoves.length}`);
         }
     }
     
     return positions;
 }
-function perft(board, maxLayer, moreInfo= false) {
+function perft(board, maxLayer, moreInfo= false, iterations = 1) {
     let currentDepth = 0;
     let num;
-    while (currentDepth-1 < maxLayer) {
-        let start = Date.now();
-        console.log(currentDepth + ": " + (num = generatePossiblePositions(board,currentDepth,moreInfo).length) + "(in "+(-start+Date.now())+"ms)");
-        currentDepth++;
-    }
+    let totalNum = 0;
+    let timeTaken;
+    let totalTime = 0;
+    for (let i of Array(iterations)) {
+        currentDepth = 0;
+        while (currentDepth-1 < maxLayer) {
+            let start = Date.now();
+            addToPageConsole(currentDepth + ": " + (num = generatePossiblePositions(board,currentDepth,moreInfo).length) + "(in "+(timeTaken = (-start+Date.now()))+"ms)");
+            addToPageConsole(num/(timeTaken/1000));
+            totalNum += num;
+            totalTime += timeTaken;
+            currentDepth++;
+        }
+        }
+    addToPageConsole(totalNum, totalTime, totalNum/(totalTime/1000));
     return num;
+}
+
+function isInCheckmate(board) {
+    board[120] = switchColorMap[board[120]];
+    let attackedSquares = generateAttackedMap(board).map((x) => x%100);
+    board[120] = switchColorMap[board[120]];
+    let friendlySquares = [];
+    for (let squareCategorizationIndex of standardBoardToBuffered) {
+        if (pieceToColorMap[board[squareCategorizationIndex]] == board[120]) {
+            friendlySquares.push(squareCategorizationIndex);
+        }
+    }
+    return findMappedMoves(board.indexOf(1+6*board[120]), friendlySquares, directions, attackedSquares).length == 0;
 }
 
 function evaluatePosition(board) {
     const pieceValues = [100,0,900,500,300,280];
+    const pieceSumWeight = 1;
+    const piecePositionWeight = 1;
     let evaluation = {sum: 0};
     let relativePieceValue;
     let pieceToCount;
@@ -787,7 +876,7 @@ function evaluatePosition(board) {
             amountOfPieces--;
             continue;
         }
-        relativePieceValue = pieceValues[pieceToCount % 6] * ( pieceToColor(pieceToCount) * -2 + 1 );
+        relativePieceValue = pieceValues[pieceToCount % 6] * (pieceToColorMap[pieceToCount] * -2 + 1 );
 
         evaluation.pieceSum += relativePieceValue;
     }
@@ -796,6 +885,8 @@ function evaluatePosition(board) {
     //piecePosition
     evaluation.piecePosition = 0;
     for (let pieceCountingIndex of standardBoardToBuffered) {
+        
+
         pieceToCount = board[pieceCountingIndex];
         if (pieceToCount == 0 || pieceToCount == 13) {
             continue;
@@ -803,24 +894,13 @@ function evaluatePosition(board) {
         adjustedSquare = standardBoardToBuffered.indexOf(pieceCountingIndex);
         adjustedSquare = invertedBoardToStandard.indexOf(adjustedSquare);
 
-        let pieceColor = pieceToColor(pieceToCount);
+        let pieceColor = pieceToColorMap[pieceToCount];
 
         relativePieceValue = positionValue[pieceToCount % 6][pieceCountingIndex, (-pieceColor+1)*adjustedSquare+(63-adjustedSquare)*(pieceColor)] * (pieceColor * -2 + 1 );
 
         evaluation.piecePosition += relativePieceValue;
     }
     evaluation.sum += evaluation.piecePosition;
-
-    //endgameKing
-    /*
-    evaluation.endgameKing = 0;
-    let endGameCoefficient = 9/(64-amountOfPieces);
-    const kingDistanceCoefficient = evaluation.pieceSum;
-    evaluation.endgameKing += 5/(Math.abs(blackKingSquare-whiteKingSquare)+Math.abs(whiteKingSquare%10-blackKingSquare%10));
-    console.log(evaluation);
-    evaluation.endgameKing *= endGameCoefficient*kingDistanceCoefficient;
-    evaluation.sum += evaluation.endgameKing;
-    */
 
     return evaluation;
 }
@@ -830,87 +910,204 @@ function alphaBeta(board, depth, alpha, beta, legalMoves, captureChecksLeft) {
         if ((captureChecksLeft > 0) && ((capturingMoves = legalMoves.filter(move => board[move%100] != 0)).length > 0)) {
             let colorMultiplier = board[120] * -2 + 1;
             let alphaBetaResult = alphaBeta(board, 1, alpha, beta, capturingMoves, captureChecksLeft-1);
-            let evaluationResult = evaluatePosition(board).sum;
-            if (evaluationResult*colorMultiplier > alphaBetaResult*colorMultiplier) {
+            let evaluationResult = evaluatePosition(board);
+            if (evaluationResult.sum*colorMultiplier > alphaBetaResult.sum*colorMultiplier) {
                 return evaluationResult;
             }
             return alphaBetaResult;
         }
-        return evaluatePosition(board).sum;
+        return evaluatePosition(board);
+    }
+    
+    if (legalMoves.length == 0) {
+        if (isInCheckmate(board)) {
+            return {sum: Infinity*-(board[120]*2+1)};
+        }
+        return {sum: 0};
     }
 
     if (board[120] == 0) {
-        let value = -Infinity;
+        let bestEvaluation = {sum:-Infinity};
+        let lastEvaluation;
         for (let move of legalMoves) {
             let temporaryBoard = structuredClone(board);
-            makeMove(move, temporaryBoard, [move]);
+            makeMove(move, temporaryBoard);
             let temporaryBoardLegalMoves = generateMoves(temporaryBoard);
-            value = Math.max(value, alphaBeta(temporaryBoard, depth - 1, alpha, beta, temporaryBoardLegalMoves, captureChecksLeft));
-            if (value > beta) {
+            lastEvaluation = alphaBeta(temporaryBoard, depth - 1, alpha, beta, temporaryBoardLegalMoves, captureChecksLeft)
+            if (bestEvaluation.sum < lastEvaluation.sum) {
+                bestEvaluation = lastEvaluation;
+            }
+            if (bestEvaluation.sum > beta) {
                 break;
             }
-            alpha = Math.max(alpha, value);
+            alpha = Math.max(alpha, bestEvaluation.sum);
         }
-        return value;
+        return bestEvaluation;
     }
     else {
-        let value = Infinity;
+        let bestEvaluation = {sum:Infinity};
+        let lastEvaluation;
         for (let move of legalMoves) {
             let temporaryBoard = structuredClone(board);
-            makeMove(move, temporaryBoard, [move]);
+            makeMove(move, temporaryBoard);
             let temporaryBoardLegalMoves = generateMoves(temporaryBoard);
-            value = Math.min(value, alphaBeta(temporaryBoard, depth - 1, alpha, beta, temporaryBoardLegalMoves, captureChecksLeft));
-            if (value < alpha) {
+            lastEvaluation = alphaBeta(temporaryBoard, depth - 1, alpha, beta, temporaryBoardLegalMoves, captureChecksLeft);
+            if (bestEvaluation.sum > lastEvaluation.sum) {
+                bestEvaluation = lastEvaluation;
+            }
+            if (bestEvaluation.sum < alpha) {
                 break;
             }
-            beta = Math.min(beta, value);
+            beta = Math.min(beta, bestEvaluation.sum);
         }
-        return value;
+        return bestEvaluation;
     }
 }
 
 function chooseMoveWithAlphaBeta(board, depth, legalMoves, maxCaptureChecks) {
     let bestMove = legalMoves[0];
     if (board[120] == 0) {
-        let value = -Infinity;
+        let bestEvaluation = {sum:-Infinity};
         for (let move of legalMoves) {
             let temporaryBoard = structuredClone(board);
-            makeMove(move, temporaryBoard, [move]);
+            makeMove(move, temporaryBoard);
             let temporaryBoardLegalMoves = generateMoves(temporaryBoard);
             let alphaBetaResult = alphaBeta(temporaryBoard, depth - 1, -Infinity, Infinity, temporaryBoardLegalMoves, maxCaptureChecks);
-            console.log(Math.round(legalMoves.indexOf(move) / legalMoves.length * 100) + '%');
-            if (value < alphaBetaResult) {
-                value = alphaBetaResult;
+            addToPageConsole(`info calculatedPercentage ${Math.round(legalMoves.indexOf(move) / legalMoves.length * 100)}`);
+            if (bestEvaluation.sum < alphaBetaResult.sum) {
+                bestEvaluation = alphaBetaResult;
                 bestMove = move;
             }
         }
-        return {evaluation: value, move: bestMove};
+        return {evaluation: bestEvaluation, move: bestMove};
     }
     else {
-        let value = Infinity;
+        let bestEvaluation = {sum:Infinity};
         for (let move of legalMoves) {
             let temporaryBoard = structuredClone(board);
-            makeMove(move, temporaryBoard, [move]);
+            makeMove(move, temporaryBoard);
             let temporaryBoardLegalMoves = generateMoves(temporaryBoard);
             let alphaBetaResult = alphaBeta(temporaryBoard, depth - 1, -Infinity, Infinity, temporaryBoardLegalMoves, maxCaptureChecks);
-            console.log(Math.round(legalMoves.indexOf(move) / legalMoves.length * 100) + '%');
-            if (value > alphaBetaResult) {
-                value = alphaBetaResult;
+            addToPageConsole(`info calculatedPercentage ${Math.round(legalMoves.indexOf(move) / legalMoves.length * 100)}`);
+            if (bestEvaluation.sum > alphaBetaResult.sum) {
+                bestEvaluation = alphaBetaResult;
                 bestMove = move;
             }
         }
 
-        return {evaluation: value, move: bestMove};
+        return {evaluation: bestEvaluation, move: bestMove};
     }
 }
+
+function evaluateMove(move,board,depth,captureDepth,bestMoveEval = undefined) {
+    bestMoveEval = bestMoveEval ?? chooseMoveWithAlphaBeta(board, depth, generateMoves(board),captureDepth);
+    let bestEval = bestMoveEval.evaluation;
+    let bestMove = bestMoveEval.move;
+    if (move == bestMove) {
+        return 0;
+    }
+    let temporaryBoard = structuredClone(board);
+    makeMove(move,temporaryBoard);
+    let madeMoveEval=alphaBeta(temporaryBoard, depth-1, -Infinity, Infinity, generateMoves(temporaryBoard), captureDepth);
+    return (board[120]*-2+1)*(madeMoveEval.sum-bestEval.sum)
+}
+
+function addToMoveList(board, move, legalMoves) {
+    let moveList = document.getElementById('moveList').innerHTML;
+    if (board[120] == 0) {
+        document.getElementById('moveList').innerHTML = moveList + `<br>${(board[124] + 1)}. <span onclick='elaborateMove(${move}, [${board}])'>${moveToAlgebraic(move, legalMoves, board, false, false)}</span>`;
+    } else {
+        document.getElementById('moveList').innerHTML = moveList + ` <span onclick='elaborateMove(${move}, [${board}])'>`+moveToAlgebraic(move, legalMoves, board, false, false);
+    }
+}
+
+function elaborateMove(move, board) {
+    const moveEvaluation = evaluateMove(move, board, document.getElementById('depthInput').value, document.getElementById('captureDepthInput').value);
+    let moveName = '';
+    if (moveEvaluation > 0) {
+        moveName = 'a brilliant move';
+    }
+    if (moveEvaluation == 0) {
+        moveName = 'the best move';
+    }
+    if (moveEvaluation < 0) {
+        moveName = 'a good move';
+    }
+    if (moveEvaluation < -75) {
+        moveName = 'a mistake';
+    }
+    if (moveEvaluation < -250) {
+        moveName = 'a blunder';
+    }
+    alert(
+`The move ${move} is ${moveName}.
+The move lost ${Math.round(-moveEvaluation)} centipawns.`
+    )
+}
+
+function evaluateGame(game) {
+    let board = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    let lastGeneratedMoves;
+    let moveEvaluationSum = [0,0];
+    let movesEvaluated = [0,0];
+    let depth = document.getElementById('depthInput').value;
+    let captureDepth = document.getElementById('captureDepthInput').value;
+
+    for (let move of game.moves) {
+        moveEvaluationSum[board[120]] += evaluateMove(move, board, depth, captureDepth);
+        movesEvaluated[board[120]]++;
+        makeMove(move, board);
+    }
+    console.log(moveEvaluationSum, movesEvaluated);
+    return [moveEvaluationSum[0]/movesEvaluated[0], moveEvaluationSum[1]/movesEvaluated[1]];
+}
+
+function setAppAesthetic(darkColor, lightColor, boardLightColor) {
+    const element = document.documentElement;
+    element.style.setProperty("--main-color-dark", darkColor);
+    element.style.setProperty("--main-color-light", lightColor);
+    element.style.setProperty('--board-color-light', boardLightColor);
+}
+
 function test() {
     let board = interpretFEN('r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -');
     console.log('MoveGen: '+(perft(board, 3) == 97862));
 }
 
+function uciInterpret(input) {
+    input = input.replace(/\s+/, ' ');
+    let splitInput = input.split(' ');
+    const commands = [
+        ['uci', () => {addToPageConsole('id name lususEngine', 'id author jia75','uciok');}],
+        ['isready', () => {addToPageConsole('readyok');}],
+        ['position', (command) => {
+            if (command[1] != 'startpos') {
+                let fenString = command[1];
+                let fenIndex = 1;
+                while (command[fenIndex+1] ?? 'moves' != 'moves') {
+                    fenIndex++;
+                    fenString += command[fenIndex];
+                }
+                mainBoard = interpretFEN(fenString);
+            } else {
+                mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            }
+            let nextMoveIndex = command.indexOf('moves') + 1;
+            while ((command[nextMoveIndex] ?? 0) != 0) {
+                addToMoveList(mainBoard, command[nextMoveIndex], generateMoves(mainBoard));
+                makeMove(command[nextMoveIndex], mainBoard, mainGame);
+                nextMoveIndex++;
+            }
+        }],
+        ['go', (command) => {}]
+    ];
+    try {
+        commands.find(x => x[0] == splitInput[0])[1](splitInput);
+    } catch (error) {}
+    displayBoard(mainBoard);
+}
 
 var clickedSquare = 0;
 var mainBoard = interpretFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+let mainGame = {moves:[], tags:[]};
 //mainBoard = interpretFEN('8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -');
-
-

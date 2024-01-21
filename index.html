@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>lusus - Chess engine & analysis</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css" id="main-stylesheet">
         <script src="script.js"></script>
     </head>
     <body>
@@ -11,7 +11,15 @@
 
             <div>
                 <div id="chessboardContainer">
-                    <img src="chessboard.png" id="chessboardImage">
+                    <div id="dynamic-chessboard">
+                        <script>
+                            const classNames = ['dynamic-chessboard-square-light','dynamic-chessboard-square-dark'];
+                            for (let i = 0; i<64;i++){
+                                document.getElementById('dynamic-chessboard').insertAdjacentHTML('beforeend',`<div class="dynamic-chessboard-square ${classNames[(Math.floor(i%16/8)+i)%2]}"></div>`);
+                            }
+                        </script>
+                    </div>
+                    <!--<img src="chessboard.png" id="chessboardImage">-->
                     <div id="clickLocationDetectorContainer">
                         <script>
                             for (let rank = 0; rank < 8; rank++) {
@@ -21,7 +29,7 @@
                                     + (rank*8+file) + '" style="left: '
                                     + (file*10.625) + 'vh; top: '
                                     + (rank*10.625) + 'vh;" onclick="squareClickEvent('
-                                    + (rank*8+file) + ', mainBoard, document.getElementById(\'promotionPiece\').value);"></div>');
+                                    + (rank*8+file) + ', mainBoard, document.getElementById(\'promotionPiece\').value,mainGame);"></div>');
                                 }
                             }
                         </script>
@@ -34,12 +42,12 @@
             </div>
             
             <div id="rightContainer">
-                <span id="evaluation"></span><br>
-                <input type="number" id="promotionPiece" value = '2'><br>
+                piece to promote to: <input type="number" id="promotionPiece" value = '2'><br>
                 <button onclick="document.getElementById('newGameOptions').style.display = 'block';">New game</button><br>
                 <div id="newGameOptions">
                     PGN:<input id="PGNInput">
-                    <button onclick="mainBoard = reenactGame(parsePGN(document.getElementById('PGNInput').value));
+                    <button onclick="mainGame = parsePGN(document.getElementById('PGNInput').value);
+                    mainBoard = reenactGame(mainGame);
                     displayBoard(mainBoard);
                     document.getElementById('newGameOptions').style.display = 'none';
                     document.getElementById('PGNInput').value = '';
@@ -47,22 +55,62 @@
                     <br>
                     FEN:<input id="FENInput">
                     <button onclick="mainBoard = interpretFEN(document.getElementById('FENInput').value);
+                    mainGame = {moves:[], tags:[]};
                     displayBoard(mainBoard);
                     document.getElementById('newGameOptions').style.display = 'none';
                     document.getElementById('PGNInput').value = '';
                     document.getElementById('FENInput').value = '';">Enter</button>
                     <br>
                     <button onclick="mainBoard = interpretFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+                    mainGame = {moves:[], tags:[]};
                     displayBoard(mainBoard);
                     document.getElementById('newGameOptions').style.display = 'none';
                     document.getElementById('PGNInput').value = '';
                     document.getElementById('FENInput').value = '';">Default</button><br>
                 </div>
+                <hr>
+                <button onclick="document.getElementById('aestheticOptions').style.display = 'block';">Aesthetic</button><br>
+                <div id="aestheticOptions">
+                    <input id="darkColor" type="color" value='#b57e4f'>
+                    <input id="lightColor" type='color' value='#d2ac94'>
+                    <input id="boardLightColor" type='color' value='#efdada'>
+                    <br>
+                    <button onclick="mainBoard = interpretFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+                    setAppAesthetic(document.getElementById('darkColor').value,
+                    document.getElementById('lightColor').value,
+                    document.getElementById('boardLightColor').value);
+                    document.getElementById('aestheticOptions').style.display = 'none';">Set</button><br>
+                </div>
                 <span class="errorMessage" id="playerMoveFormError"></span>
-                Depth: <input type="number"  id="depthInput" value="3">Capture Depth: <input type="number" id="captureDepthInput" value="4">
-                <button onclick="let generatedMoves; makeMove(chooseMoveWithAlphaBeta(mainBoard, document.getElementById('depthInput').value, generatedMoves = generateMoves(mainBoard), document.getElementById('captureDepthInput').value).move, mainBoard, generatedMoves);displayBoard(mainBoard);">play</button>
+                Depth: <input type="number"  id="depthInput" value="2">Capture Depth: <input type="number" id="captureDepthInput" value="4">
                 <br>
+                <button onclick="
+                let generatedMoves;
+                let chosenMove = chooseMoveWithAlphaBeta(mainBoard, document.getElementById('depthInput').value, generatedMoves = generateMoves(mainBoard), document.getElementById('captureDepthInput').value).move
+                addToMoveList(mainBoard, chosenMove, generatedMoves);
+                makeMove(chosenMove, mainBoard, mainGame);
+                displayBoard(mainBoard);
+                ">Play best move</button>
+                <br>
+                Play against engine:<input type="checkbox" id="enginePlaySetting">
+                <hr>
+                <button onclick="document.getElementById('console-output').style.height = '6lh';
+                 document.getElementById('console-input').style.display = 'block';
+                  document.getElementById('console-input-enter').style.display = 'block';">Console Mode</button>
+                <div id="console-output">
+                    id author jia75<br>
+                    id name lusus-engine<br>
+                    ! this is a newest message first output box.
+                </div>
+                <input id='console-input' type='text' style="display: none;">
+                <button id="console-input-enter" style="display: none;"
+                onclick="uciInterpret(document.getElementById('console-input').value);
+                document.getElementById('console-input').value = '';">enter</button>
+                <hr>
                 <span id="moveList">Move List: <br></span>
+                <hr>
+                <button onclick='
+            alert(evaluateGame(mainGame));'>evaluate game</button>
             </div>
             
         </div>

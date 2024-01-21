@@ -1,7 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+:root {
+    --main-color-dark: #b57e4f;
+    --main-color-light: #d2ac94;
+    --board-color-light: #efdada;
+}
 html {
-    background-color: #d2ac94;
+    background-color: var(--main-color-light);
     color: #282814;
-    font-family:'Courier New', Courier, monospace;
+    font-family: 'Roboto', sans-serif;
+
 }
 h1 {
     font-size: 4vh;
@@ -32,8 +39,9 @@ h1 {
     object-fit: contain;
 }
 #rightContainer {
-    background-color: #b57e4f;
+    background-color: var(--main-color-dark);
     flex: 1;
+    color: #ffffff;
 }
 .chessPieceImage {
     position: absolute;
@@ -49,10 +57,12 @@ h1 {
     z-index: 1;
 }
 button {
-    background-color: #eeeeee;
+    all: unset;
+    background-color: var(--board-color-light);
+    padding: 1px 5px;
+    color: #282814;
     border: 0;
-    border-radius: 3px;
-    font-family:'Courier New', Courier, monospace;
+    border-radius: 0px;
 }
 button:focus {
     background-color: #efdada;
@@ -63,9 +73,43 @@ span {
 #newGameOptions {
     display: none;
 }
+#aestheticOptions {
+    display: none;
+}
 #depthInput {
     width: 30px;
 }
 #captureDepthInput {
     width: 30px;
+}
+#dynamic-chessboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 0;
+    width: 85vh;
+    height: 85vh;
+}
+.dynamic-chessboard-square {
+    aspect-ratio: 1;
+}
+.dynamic-chessboard-square-dark {
+    background-color: var(--main-color-dark);
+}
+.dynamic-chessboard-square-light {
+    background-color: var(--board-color-light);
+}
+#console-output{
+    background-color: #000000;
+    color: #00ff00;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 1lh;
+    font-family: monospace;
+}
+#console-input {
+    background-color: #000000;
+    color: #00ff00;
+    height: 1lh;
+    font-family: monospace;
+    border-radius: 0px;
 }
