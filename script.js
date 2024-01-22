@@ -1058,8 +1058,7 @@ function evaluateGame(game) {
         movesEvaluated[board[120]]++;
         makeMove(move, board);
     }
-    console.log(moveEvaluationSum, movesEvaluated);
-    return [moveEvaluationSum[0]/movesEvaluated[0], moveEvaluationSum[1]/movesEvaluated[1]];
+    addToPageConsole(`info averageLossForWhite ${moveEvaluationSum[white]/movesEvaluated[white]}`, `info averageLossForBlack ${moveEvaluationSum[1]/movesEvaluated[1]}`);
 }
 
 function setAppAesthetic(darkColor, lightColor, boardLightColor) {
