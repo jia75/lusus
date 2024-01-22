@@ -1013,15 +1013,17 @@ function evaluateMove(move,board,depth,captureDepth,bestMoveEval = undefined) {
 }
 
 function addToMoveList(board, move, legalMoves) {
-    let moveList = document.getElementById('moveList').innerHTML;
+    const moveIndex = (Date.now()+legalMoves.length*1200+move*42347).toString(36);
+    const moveList = document.getElementById('moveList').innerHTML;
     if (board[120] == 0) {
-        document.getElementById('moveList').innerHTML = moveList + `<br>${(board[124] + 1)}. <span onclick='elaborateMove(${move}, [${board}])'>${moveToAlgebraic(move, legalMoves, board, false, false)}</span>`;
+        document.getElementById('moveList').innerHTML = moveList +
+        `<br>${(board[124] + 1)}. <a class='move-text' id='moveText${moveIndex}' onclick='elaborateMove(${move}, [${board}], "${moveIndex}")'>${moveToAlgebraic(move, legalMoves, board, false, false)}</a>`;
     } else {
-        document.getElementById('moveList').innerHTML = moveList + ` <span onclick='elaborateMove(${move}, [${board}])'>`+moveToAlgebraic(move, legalMoves, board, false, false);
+        document.getElementById('moveList').innerHTML = moveList + ` <a class='move-text' id='moveText${moveIndex}' onclick='elaborateMove(${move}, [${board}], "${moveIndex}")'>${moveToAlgebraic(move, legalMoves, board, false, false)}</a>`;
     }
 }
 
-function elaborateMove(move, board) {
+function elaborateMove(move, board, moveIndex) {
     const moveEvaluation = evaluateMove(move, board, document.getElementById('depthInput').value, document.getElementById('captureDepthInput').value);
     let moveName = '';
     if (moveEvaluation > 0) {
@@ -1039,10 +1041,8 @@ function elaborateMove(move, board) {
     if (moveEvaluation < -250) {
         moveName = 'a blunder';
     }
-    alert(
-`The move ${move} is ${moveName}.
-The move lost ${Math.round(-moveEvaluation)} centipawns.`
-    )
+    document.getElementById('moveText'+moveIndex).insertAdjacentHTML('afterend',` {The move ${move} is ${moveName}.
+    The move lost ${Math.round(-moveEvaluation)} centipawns.}`);
 }
 
 function evaluateGame(game) {
