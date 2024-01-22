@@ -1059,6 +1059,28 @@ function evaluateGame(game) {
         makeMove(move, board);
     }
     addToPageConsole(`info averageLossForWhite ${moveEvaluationSum[white]/movesEvaluated[white]}`, `info averageLossForBlack ${moveEvaluationSum[1]/movesEvaluated[1]}`);
+    const whiteAverageLoss = moveEvaluationSum[white]/movesEvaluated[white];
+    const blackAverageLoss = moveEvaluationSum[black]/movesEvaluated[black];
+    
+    //Get the following from game object, and if they don't exist set them to defaultWhiteUser, defaultBlackUser
+	const whitePlayerName = game.tags['White'] ?? 'White, Default';
+	const blackPlayerName = game.tags['Black'] ?? 'Black, Default';
+
+	if (localStorage.getItem('userPerformanceObject') == undefined) {
+		localStorage.setItem('userPerformanceObject', JSON.stringify({}));
+	}
+	let userPerformanceObject = JSON.parse(localStorage.getItem('userPerformanceObject'));
+    userPerformanceObject[whitePlayerName] ??= {};
+    userPerformanceObject[blackPlayerName] ??= {};
+    userPerformanceObject[whitePlayerName].lossSum ??= 0;
+    userPerformanceObject[whitePlayerName].dataCount ??= 0;
+    userPerformanceObject[blackPlayerName].lossSum ??= 0;
+    userPerformanceObject[blackPlayerName].dataCount ??= 0;
+	userPerformanceObject[whitePlayerName].lossSum += whiteAverageLoss;
+	userPerformanceObject[whitePlayerName].dataCount++;
+	userPerformanceObject[blackPlayerName].lossSum += blackAverageLoss;
+	userPerformanceObject[blackPlayerName].dataCount++;
+	localStorage.setItem('userPerformanceObject', JSON.stringify(userPerformanceObject));
 }
 
 function setAppAesthetic(darkColor, lightColor, boardLightColor) {
